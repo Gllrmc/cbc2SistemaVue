@@ -287,11 +287,10 @@
     </v-app-bar>
     <v-content>
       <v-container
-        class="fill-height"
         fluid
       >
         <v-slide-y-transition mode="out-in">
-          <v-layout row fill-height>
+          <v-layout>
             <router-view></router-view>
           </v-layout>
         </v-slide-y-transition>
