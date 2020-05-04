@@ -51,16 +51,16 @@
                             <v-container grid-list-md>
                                 <v-row dense>
 
-                                    <v-flex cols="12" sm="6" md="6">
+                                    <v-col cols="12" sm="6" md="6">
                                         <v-text-field v-model="userid" label="Userid">
                                         </v-text-field>
-                                    </v-flex>
-                                    <v-flex cols="12" sm="6" md="6">
+                                    </v-col>
+                                    <v-col cols="12" sm="6" md="6">
                                         <v-select v-model="rolId"
                                         :items="roles" label="Rol">
                                         </v-select>
-                                    </v-flex>
-                                    <v-flex cols="12" sm="6" md="6">
+                                    </v-col>
+                                    <v-col cols="12" sm="6" md="6">
                                         <v-autocomplete 
                                         v-model="personaId" 
                                         clearable
@@ -68,19 +68,19 @@
                                         :search-input.sync="searchpe"
                                         label="Persona">
                                         </v-autocomplete>
-                                    </v-flex>
-                                    <v-flex cols="12" sm="6" md="6">
+                                    </v-col>
+                                    <v-col cols="12" sm="6" md="6">
                                         <v-text-field v-model="telefono" label="Teléfono">
                                         </v-text-field>
-                                    </v-flex>
-                                    <v-flex cols="12" sm="6" md="6">
+                                    </v-col>
+                                    <v-col cols="12" sm="6" md="6">
                                         <v-text-field v-model="email" label="Email">
                                         </v-text-field>
-                                    </v-flex>
-                                    <v-flex cols="12" sm="6" md="6">
+                                    </v-col>
+                                    <v-col cols="12" sm="6" md="6">
                                         <v-text-field type="password" v-model="password" label="Password">
                                         </v-text-field>
-                                    </v-flex>
+                                    </v-col>
                                     <v-col cols="12" sm="12" md="12" v-show="valida">
                                         <div class="red--text" v-for="v in validaMensaje" :key="v" v-text="v">
                                         </div>
@@ -154,7 +154,7 @@
             </template>
             <template v-slot:item.activo="{ item }">
                 <td>
-                    <div v-if="item">
+                    <div v-if="item.activo">
                         <span class="blue--text">Activo</span>
                     </div>
                     <div v-else>

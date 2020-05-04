@@ -159,7 +159,7 @@
             </template>
             <template v-slot:item.activo="{ item }">
                 <td>
-                    <div v-if="item">
+                    <div v-if="item.activo">
                         <span class="blue--text">Activo</span>
                     </div>
                     <div v-else>

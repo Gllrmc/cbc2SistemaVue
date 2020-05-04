@@ -3,7 +3,7 @@
         <v-col>
             <v-data-table
             :headers="headers"
-            :items="bancos"
+            :items="empresas"
             :search="search"
             class="elevation-1"
             no-data-text="Nada para mostrar"
@@ -13,7 +13,7 @@
                     <div class="ma-2">
                         <v-btn small @click="crearPDF()"><v-icon>print</v-icon></v-btn>
                     </div>
-                    <v-toolbar-title>Categorias</v-toolbar-title>
+                    <v-toolbar-title>Empresas</v-toolbar-title>
                     <v-snackbar
                         v-model="snackbar"
                         :timeout="timeout"
@@ -51,10 +51,56 @@
                             <v-container grid-list-md>
                                 <v-row dense>
                                     <v-col cols="12" sm="9" md="9">
-                                    <v-text-field v-model="nombre" label="Banco"></v-text-field>
+                                        <v-text-field v-model="nombre" label="Empresa">
+                                        </v-text-field>
                                     </v-col>
                                     <v-col cols="12" sm="3" md="3">
-                                    <v-text-field v-model="codigoBCRA" label="Código BCRA"></v-text-field>
+                                        <v-text-field v-model="cuit" label="CUIT">
+                                        </v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" sm="9" md="9">
+                                        <v-text-field v-model="direccion" label="Dirección">
+                                        </v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" sm="3" md="3">
+                                        <v-text-field v-model="localidad" label="Localidad">
+                                        </v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" sm="5" md="5">
+                                        <v-autocomplete 
+                                            v-model="paisId"
+                                            clearable
+                                            :items = "paises"
+                                            :search-input.sync="searchpa"
+                                            @change="filterProvincias()"
+                                            label = "País">
+                                        </v-autocomplete>
+                                    </v-col>
+                                    <v-col cols="12" sm="5" md="5">
+                                        <v-autocomplete 
+                                            v-model="provinciaId"
+                                            clearable
+                                            :items = "provinciasf" 
+                                            :search-input.sync="searchpr"                                    
+                                            @change="asignaPais()"                                   
+                                            label = "Provincia">
+                                        </v-autocomplete>
+                                    </v-col>
+                                    <v-col cols="12" sm="2" md="2">
+                                        <v-text-field v-model="cpostal" label="C.P.">
+                                        </v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" sm="4" md="4">
+                                        <v-text-field v-model="telefono" label="telefono">
+                                        </v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" sm="4" md="4">
+                                        <v-text-field v-model="email" label="eMail">
+                                        </v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" sm="4" md="4">
+                                        <v-text-field v-model="webpage" label="Web Page">
+                                        </v-text-field>
                                     </v-col>
                                     <v-col cols="12" sm="12" md="12" v-show="valida">
                                         <div class="red--text" v-for="v in validaMensaje" :key="v" v-text="v">
@@ -70,15 +116,15 @@
                         </v-card-actions>
                         </v-card>
                     </v-dialog>
-                    <v-dialog v-model="adModal" max-width="290">
+                    <v-dialog v-model="adModal" max-width="390">
                         <v-card>
-                            <v-card-title class="headline" v-if="adAccion==1">¿Activar Banco?</v-card-title>
-                            <v-card-title class="headline" v-if="adAccion==2">Bloquear Banco?</v-card-title>
+                            <v-card-title class="headline" v-if="adAccion==1">¿Activar Concepto de Banco?</v-card-title>
+                            <v-card-title class="headline" v-if="adAccion==2">Bloquear Concepto de Banco?</v-card-title>
                             <v-card-text>
                                 Estás a punto de 
                                 <span v-if="adAccion==1">Activar </span>
                                 <span v-if="adAccion==2">Bloquear </span>
-                                el Banco {{ adNombre }}
+                                el Concepto de Banco: {{ adNombre }}
                             </v-card-text>
                             <v-card-actions>
                                 <v-spacer/>
@@ -160,28 +206,55 @@
         snackbar:false,
         snacktext: '',
         timeout: 4000,
-        bancos: [],
+                empresas:[],
+                paises: [],
+                provincias: [],               
+                provinciasf: [],               
+
+        empresas: [],
+        roles:[],
+        personas: [],
+
         dialog: false,
         headers: [
-            { text: '[Opciones]', value: 'actions', align: 'start', sortable: false },
-            { text: 'Denominacion', value: 'nombre', align: 'start', sortable: true },
-            { text: 'Codigo BCRA', value: 'codigoBCRA', align: 'center', sortable: true },
+            { text: '[Opciones]', value: 'actions', align: 'center', sortable: false },
+            { text: 'Razon Social', value: 'nombre', align: 'start', sortable: true },
+            { text: 'CUIT', value: 'cuit', align: 'start', sortable: true },
+            { text: 'Direccion', value: 'direccion', align: 'start', sortable: true },
+            { text: 'Localidad', value: 'localidad', align: 'start', sortable: true },
+            { text: 'C.P.', value: 'cpostal', align: 'start', sortable: true },
+            { text: 'Provincia', value: 'provincia', align: 'start', sortable: true  },
+            { text: 'Pais', value: 'pais', align: 'start', sortable: true  },
+            { text: 'Telefono', value: 'telefono', align: 'start', sortable: true  },
+            { text: 'eMail', value: 'email', align: 'start', sortable: true  },
+            { text: 'Web Page', value: 'webpage', align: 'start', sortable: true  },
+            { text: 'Teléfono', value: 'telefono', align: 'start', sortable: true },
             { text: 'Estado', value: 'activo', align: 'center', sortable: true  },
-            { text: 'Creador Id', value: 'iduseralta', sortable: true },
-            { text: 'Fecha Hora Creación', value: 'fecalta', sortable: true },
-            { text: 'Mod. Id', value: 'iduserumod', sortable: true },
-            { text: 'Fecha Hora Ult.Mod.', value: 'fecumod', sortable: true }                   
+            { text: 'Creador Id', value: 'iduseralta', align: 'center', sortable: true },
+            { text: 'Fecha Hora Creación', value: 'fecalta', align: 'start', sortable: true },
+            { text: 'Mod. Id', value: 'iduserumod', align: 'center', sortable: true },
+            { text: 'Fecha Hora Ult.Mod.', value: 'fecumod', align: 'start', sortable: true }                   
         ],
-        search:'',
+        search: '',
+        searchpa: '',
+        searchpr: '',
         editedIndex: -1,
         id: '',
+        paisId:'',
+        provinciaId:'',
         nombre: '',
-        codigoBCRA: '',
+        cuit: '',
+        direccion: '',
+        localidad: '',
+        cpostal:'',
+        email: '',
+        telefono: '',
+        webpage: '',
         iduseralta:'',
         fecalta:'',
         iduserumod:'',
         fecumod:'',
-        activo:false,                 
+        activo:false,
         valida: 0,
         validaMensaje:[],
         adModal: 0,
@@ -192,31 +265,41 @@
 
     computed: {
       formTitle () {
-        return this.editedIndex === -1 ? 'Nuevo Banco' : 'Actualizar Banco'
+        return this.editedIndex === -1 ? 'Nueva empresa' : 'Actualizar empresa'
       },
     },
 
     watch: {
-      dialog (val) {
-        val || this.close()
-      },
+        dialog (val) {
+            val || this.close()
+        },
     },
 
     created () {
-      this.listar()
+        this.select();
+        this.listar()
     },
 
     methods: {
         crearPDF(){
             var columns = [
-                {title: "Razon Social", dataKey: "nombre"},
-                {title: "Codigo BCRA", dataKey: "codigoBCRA"},
-                {title: "Activo", dataKey: "activo"}
+                    {title: "Razon Social", dataKey: "nombre"},
+                    {title: "CUIT", dataKey: "cuit"},
+                    {title: "Dirección", dataKey: "direccion"}, 
+                    {title: "Localidad", dataKey: "localidad"}, 
+                    {title: "C.P.", dataKey: "cpostal"},
+                    {title: "Provincia", dataKey: "provincia"}, 
+                    {title: "Pais", dataKey: "pais"}, 
+                    {title: "Teléfono", dataKey: "telefono"}, 
+                    {title: "eMail", dataKey: "email"}, 
+                    {title: "Web Page", dataKey: "webpage"},
+                    {title: "Activo", dataKey: "activo"}
             ];
             var rows = [];
 
-            this.bancos.map(function(x){
-                rows.push({nombre:x.nombre,codigoBCRA:x.codigoBCRA,activo:x.activo});
+            this.empresas.map(function(x){
+                    rows.push({nombre:x.nombre,cuit:x.cuit,direccion:x.direccion,localidad:x.localidad,cpostal:x.cpostal,provincia:x.provincia,pais:x.pais,
+                    telefono:x.telefono,email:x.email,webpage:x.webpage,activo:x.activo});
             });
 
             // Only pt supported (not mm or in)
@@ -224,44 +307,93 @@
             doc.autoTable(columns, rows, {
                 margin: {top: 60},
                 addPageContent: function(data) {
-                    doc.text("Listado de Bancos", 40, 30);
+                    doc.text("Listado de Usuarios", 40, 30);
                 }
             });
-            doc.save('Bancos.pdf');
+            doc.save('Usuarios.pdf');
         },
         listar(){
             let me=this;
             let header={"Authorization" : "Bearer " + this.$store.state.token};
             let configuracion= {headers : header};
-            // console.log(configuracion);
-            axios.get('api/Bancos/Listar',configuracion).then(function(response){
-                // console.log(response);
-                me.bancos=response.data;
+            axios.get('api/Empresas/Listar',configuracion).then(function(response){
+                //console.log(response);
+                me.empresas=response.data;
             }).catch(function(error){
                 me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
                 me.snackbar = true;
                 console.log(error);
             });
         },
-
+        select(){
+            let me=this;
+            var paisesArray=[];
+            var provinciasArray=[];
+            let header={"Authorization" : "Bearer " + this.$store.state.token};
+            let configuracion= {headers : header};
+            axios.get('api/Paises/Select',configuracion).then(function(response){
+                // console.log(response);
+                paisesArray=response.data;
+                paisesArray.map(function(x){
+                    me.paises.push({text: x.nombre,value:x.id});
+                });
+            }).catch(function(error){
+                me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
+                me.snackbar = true;
+                console.log(error);
+            });
+            axios.get('api/Provincias/Select',configuracion).then(function(response){
+                // console.log(response);
+                provinciasArray=response.data;
+                provinciasArray.map(function(x){
+                    me.provincias.push({text: x.nombre,value:x.id, pais: x.paisId});
+                    me.provinciasf=me.provincias;
+                });
+            }).catch(function(error){
+                me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
+                me.snackbar = true;
+                console.log(error);
+            });
+        },
+        asignaPais(){
+            var ii = this.provincias.findIndex(p => p.value === this.provinciaId);
+            this.paisId = this.provincias[ii].pais;
+        },
+        filterProvincias(){
+            this.provinciasf = this.provincias.filter(x => x.pais === this.paisId);
+            if (provinciaId) {
+                var ii = this.provincias.findIndex(p => p.value === this.provinciaId);
+                if (!this.paisId === this.provincias[ii].pais){
+                    this.provinciaId="";
+                }
+            }
+        },
         editItem (item) {
-                this.id=item.id;
-                this.nombre=item.nombre;
-                this.codigoBCRA=item.codigoBCRA;
-                this.iduseralta=item.iduseralta;
-                this.fecalta=item.fecalta;
-                this.iduserumod=item.iduserumod;
-                this.fecumod=item.fecumod;
-                this.activo=item.activo;                
-                this.editedIndex=1;
-                this.dialog = true
+            this.id=item.id;
+            this.provinciaId=item.provinciaId;
+            this.paisId=item.paisId;
+            this.nombre=item.nombre;
+            this.cuit=item.cuit;
+            this.direccion=item.direccion;
+            this.localidad=item.localidad;
+            this.cpostal=item.cpostal;
+            this.telefono=item.telefono;
+            this.email=item.email;
+            this.webpage=item.webpage;
+            this.iduseralta=item.iduseralta;
+            this.fecalta=item.fecalta;
+            this.iduserumod=item.iduserumod;
+            this.fecumod=item.fecumod;
+            this.activo=item.activo;                
+            this.editedIndex=1;
+            this.dialog = true
         },
         deleteItem (item) {
             var resulta = confirm('Esta seguro de querer borrar el registro?');
             if (result) {
                 let header={"Authorization" : "Bearer " + this.$store.state.token};
                 let configuracion= {headers : header};
-                axios.delete('api/Bancos/Eliminar/'+item.id,configuracion).then(function(response){
+                axios.delete('api/Empresas/Eliminar/'+item.id,configuracion).then(function(response){
                     me.close();
                         me.listar();
                         me.limpiar();
@@ -278,9 +410,17 @@
 
         },
         limpiar(){
+            this.provinciasf=this.provincias;
             this.id="";
+            this.paisId="";
+            this.provinciaId="";
             this.nombre="";
-            this.codigoBCRA="";
+            this.cuit="";
+            this.direccion="";
+            this.localidad="";
+            this.telefono="";
+            this.email="";
+            this.webpage="";
             this.iduseralta = "";
             this.fecalta = "";
             this.iduserumod = "";
@@ -289,20 +429,28 @@
             this.editedIndex=-1;
         },
         guardar () {
-            let me=this;
-            if (me.validar()){
+            if (this.validar()){
                 return;
             }
             var date = new Date();                
-            let header={"Authorization" : "Bearer " + me.$store.state.token};
+            let header={"Authorization" : "Bearer " + this.$store.state.token};
             let configuracion= {headers : header};
-            if (me.editedIndex > -1) {
+            if (this.editedIndex > -1) {
                 //Código para editar
                 //Código para guardar
-                axios.put('api/Bancos/Actualizar',{
+                let me=this;
+                axios.put('api/Empresas/Actualizar',{
                     'Id':me.id,
+                    'paisId':me.paisId,
+                    'provinciaId':me.provinciaId,
                     'nombre': me.nombre,
-                    'codigoBCRA': me.codigoBCRA,
+                    'cuit': me.cuit,
+                    'direccion': me.direccion,
+                    'localidad': me.localidad,
+                    'cpostal': me.cpostal,
+                    'telefono': me.telefono,
+                    'email': me.email,
+                    'webpage': me.webpage,
                     'iduseralta': me.iduseralta,
                     'fecalta': me.fecalta,
                     'iduserumod': me.$store.state.usuario.idusuario,
@@ -318,9 +466,18 @@
                 });
             } else {
                 //Código para guardar
-                axios.post('api/Bancos/Crear',{
+                let me=this;
+                axios.post('api/Empresas/Crear',{
+                    'paisId':me.paisId,
+                    'provinciaId':me.provinciaId,
                     'nombre': me.nombre,
-                    'codigoBCRA': me.codigoBCRA,
+                    'cuit': me.cuit,
+                    'direccion': me.direccion,
+                    'localidad': me.localidad,
+                    'cpostal': me.cpostal,
+                    'telefono': me.telefono,
+                    'email': me.email,
+                    'webpage': me.webpage,
                     'iduseralta': me.$store.state.usuario.idusuario                           
                 },configuracion).then(function(response){
                     me.close();
@@ -338,14 +495,19 @@
             this.validaMensaje=[];
 
             if (this.nombre.length<3 || this.nombre.length>50){
-                this.validaMensaje.push("El Banco debe tener más de 3 caracteres y menos de 50 caracteres.");
+                this.validaMensaje.push("La empresa debe tener más de 3 caracteres y menos de 50 caracteres.");
+            }
+            if (!this.paisId){
+                this.validaMensaje.push("Seleccione un país.");
+            }
+            if (!this.provinciaId){
+                this.validaMensaje.push("Seleccione una provincia.");
             }
             if (this.validaMensaje.length){
                 this.valida=1;
             }
             return this.valida;
         },
-
         activarDesactivarMostrar(accion,item){
             this.adModal=1;
             this.adNombre=item.nombre;
@@ -367,7 +529,7 @@
             let me=this;
             let header={"Authorization" : "Bearer " + this.$store.state.token};
             let configuracion= {headers : header};
-            axios.put('api/Bancos/Activar/'+this.adId,{},configuracion).then(function(response){
+            axios.put('api/Empresas/Activar/'+this.adId,{},configuracion).then(function(response){
                 me.adModal=0;
                 me.adAccion=0;
                 me.adNombre="";
@@ -383,7 +545,7 @@
             let me=this;
             let header={"Authorization" : "Bearer " + this.$store.state.token};
             let configuracion= {headers : header};
-            axios.put('api/Bancos/Desactivar/'+this.adId,{},configuracion).then(function(response){
+            axios.put('api/Empresas/Desactivar/'+this.adId,{},configuracion).then(function(response){
                 me.adModal=0;
                 me.adAccion=0;
                 me.adNombre="";

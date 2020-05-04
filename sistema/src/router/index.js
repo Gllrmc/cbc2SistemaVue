@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 import Login from '../components/Login.vue'
 import Banco from '../components/Banco.vue'
 import Conbanco from '../components/Conbanco.vue'
+import Empresa from '../components/Empresa.vue'
 import Rol from '../components/Rol.vue'
 import Usuario from '../components/Usuario.vue'
 
@@ -30,6 +31,11 @@ Vue.use(VueRouter)
     name: 'conbancos',
     component: Conbanco
   },
+  {
+    path: '/empresas',
+    name: 'empresas',
+    component: Empresa
+  },   
   {
     path: '/roles',
     name: 'roles',
