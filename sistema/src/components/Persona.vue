@@ -3,7 +3,7 @@
         <v-col>
             <v-data-table
             :headers="headers"
-            :items="empresas"
+            :items="personas"
             :search="search"
             class="elevation-1"
             no-data-text="Nada para mostrar"
@@ -13,7 +13,7 @@
                     <div class="ma-2">
                         <v-btn small @click="crearPDF()"><v-icon>print</v-icon></v-btn>
                     </div>
-                    <v-toolbar-title>Empresas</v-toolbar-title>
+                    <v-toolbar-title>Personas</v-toolbar-title>
                     <v-snackbar
                         v-model="snackbar"
                         :timeout="timeout"
@@ -50,23 +50,40 @@
                         <v-card-text>
                             <v-container grid-list-md>
                                 <v-row dense>
-                                    <v-col cols="12" sm="9" md="9">
-                                        <v-text-field v-model="nombre" label="Empresa">
+                                    <v-flex cols="12" sm="12" md="12">
+                                        <v-text-field v-model="nombre" label="Nombre">
                                         </v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" sm="3" md="3">
-                                        <v-text-field v-model="cuit" label="CUIT">
+                                    </v-flex>
+                                    <v-flex cols="12" sm="3" md="3">
+                                        <v-text-field v-model="emailpersonal" label="eMail">
                                         </v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" sm="9" md="9">
-                                        <v-text-field v-model="direccion" label="Dirección">
+                                    </v-flex>
+                                    <v-flex cols="12" sm="3" md="3">
+                                        <v-text-field v-model="telefonopersonal" label="Telefono">
                                         </v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" sm="3" md="3">
+                                    </v-flex>
+                                    <v-flex cols="12" sm="3" md="3">
+                                        <v-select v-model="tipodocumento" 
+                                        :items="tipodocumentos" label="Tipo Doc.">
+                                        </v-select>
+                                    </v-flex>                                
+                                    <v-flex cols="12" sm="3" md="3">
+                                        <v-text-field v-model="numdocumento" label="Nro. Documento">
+                                        </v-text-field>
+                                    </v-flex>
+                                    <v-flex cols="12" sm="10" md="10">
+                                        <v-text-field v-model="domicilio" label="Domicilio">
+                                        </v-text-field>
+                                    </v-flex>
+                                    <v-flex cols="12" sm="2" md="2">
+                                        <v-text-field v-model="cpostal" label="C.P.">
+                                        </v-text-field>
+                                    </v-flex>
+                                    <v-flex cols="12" sm="4" md="4">
                                         <v-text-field v-model="localidad" label="Localidad">
                                         </v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" sm="5" md="5">
+                                    </v-flex>
+                                    <v-flex cols="12" sm="4" md="4">
                                         <v-autocomplete 
                                             v-model="paisId"
                                             clearable
@@ -75,8 +92,8 @@
                                             @change="filterProvincias()"
                                             label = "País">
                                         </v-autocomplete>
-                                    </v-col>
-                                    <v-col cols="12" sm="5" md="5">
+                                    </v-flex>
+                                    <v-flex cols="12" sm="4" md="4">
                                         <v-autocomplete 
                                             v-model="provinciaId"
                                             clearable
@@ -85,23 +102,19 @@
                                             @change="asignaPais()"                                   
                                             label = "Provincia">
                                         </v-autocomplete>
-                                    </v-col>
-                                    <v-col cols="12" sm="2" md="2">
-                                        <v-text-field v-model="cpostal" label="C.P.">
-                                        </v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" sm="4" md="4">
-                                        <v-text-field v-model="telefono" label="telefono">
-                                        </v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" sm="4" md="4">
-                                        <v-text-field v-model="email" label="eMail">
-                                        </v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" sm="4" md="4">
-                                        <v-text-field v-model="webpage" label="Web Page">
-                                        </v-text-field>
-                                    </v-col>
+                                    </v-flex>
+                                    <v-flex cols="12" sm="4" md="4">
+                                        <input type="checkbox" id="esempleado" v-model="esempleado">
+                                        <label for = "esempleado"> Es empleado?</label>
+                                    </v-flex>                                
+                                    <v-flex cols="12" sm="4" md="4">
+                                        <input type="checkbox" id="esproveedor" v-model="esproveedor">
+                                        <label for = "esproveedor"> Es proveedor?</label>
+                                    </v-flex>
+                                    <v-flex cols="12" sm="4" md="4">
+                                        <input type="checkbox" id="escliente" v-model="escliente">
+                                        <label for = "escliente"> Es Cliente?</label>
+                                    </v-flex> 
                                     <v-col cols="12" sm="12" md="12" v-show="valida">
                                         <div class="red--text" v-for="v in validaMensaje" :key="v" v-text="v">
                                         </div>
@@ -183,6 +196,36 @@
                     </div>
                 </td>
             </template>
+            <template v-slot:item.esempleado="{ item }">
+                    <td>
+                        <div v-if="item.esempleado">
+                            <span class="green--text">Si</span>
+                        </div>
+                        <div v-else>
+                            <span class="blue--text">No</span>
+                        </div>
+                    </td>                   
+            </template>
+            <template v-slot:item.esproveedor="{ item }">
+                    <td>
+                        <div v-if="item.esproveedor">
+                            <span class="green--text">Si</span>
+                        </div>
+                        <div v-else>
+                            <span class="blue--text">No</span>
+                        </div>
+                    </td>                   
+            </template>
+            <template v-slot:item.escliente="{ item }">
+                    <td>
+                        <div v-if="item.escliente">
+                            <span class="green--text">Si</span>
+                        </div>
+                        <div v-else>
+                            <span class="blue--text">No</span>
+                        </div>
+                    </td>                   
+            </template>
             <template v-slot:item.fecalta="{ item }">
                 <td>{{ item.fecalta.substr(0, 16) }}</td>
             </template>
@@ -206,24 +249,26 @@
         snackbar:false,
         snacktext: '',
         timeout: 4000,
-        empresas:[],
+        personas:[],
+        personasf:[],
         paises: [],
-        provincias: [],               
-        provinciasf: [],
+        provincias: [],
         dialog: false,
         headers: [
             { text: '[Opciones]', value: 'actions', align: 'center', sortable: false },
-            { text: 'Razon Social', value: 'nombre', align: 'start', sortable: true },
-            { text: 'CUIT', value: 'cuit', align: 'start', sortable: true },
-            { text: 'Direccion', value: 'direccion', align: 'start', sortable: true },
+            { text: 'Nombre Completo', value: 'nombre', align: 'start', sortable: true },
+            { text: 'eMail', value: 'emailpersonal', align: 'start', sortable: true  },
+            { text: 'Telefono', value: 'telefonopersonal', align: 'start', sortable: true  },
+            { text: 'Empleado?', value: 'esempleado', align: 'start', sortable: true  },
+            { text: 'Proveedor?', value: 'esproveedor', align: 'start', sortable: true  },
+            { text: 'Cliente?', value: 'escliente', align: 'start', sortable: true  },
+            { text: 'Domicilio', value: 'domicilio', align: 'start', sortable: true },
             { text: 'Localidad', value: 'localidad', align: 'start', sortable: true },
             { text: 'C.P.', value: 'cpostal', align: 'start', sortable: true },
             { text: 'Provincia', value: 'provincia', align: 'start', sortable: true  },
             { text: 'Pais', value: 'pais', align: 'start', sortable: true  },
-            { text: 'Telefono', value: 'telefono', align: 'start', sortable: true  },
-            { text: 'eMail', value: 'email', align: 'start', sortable: true  },
-            { text: 'Web Page', value: 'webpage', align: 'start', sortable: true  },
-            { text: 'Teléfono', value: 'telefono', align: 'start', sortable: true },
+            { text: 'Tipo Doc.', value: 'tipodocumento', sortable: true  },
+            { text: 'Númenro', value: 'numdocumento', sortable: true  },
             { text: 'Estado', value: 'activo', align: 'center', sortable: true  },
             { text: 'Creador Id', value: 'iduseralta', align: 'center', sortable: true },
             { text: 'Fecha Hora Creación', value: 'fecalta', align: 'start', sortable: true },
@@ -238,13 +283,17 @@
         paisId:'',
         provinciaId:'',
         nombre: '',
-        cuit: '',
-        direccion: '',
+        domicilio: '',
         localidad: '',
-        cpostal:'',
-        email: '',
-        telefono: '',
-        webpage: '',
+        cpostal: '',
+        emailpersonal: '',
+        telefonopersonal: '',
+        tipodocumentos: ['DNI','PAS','LC','CI'],
+        tipodocumento: '',
+        numdocumento: '',
+        esempleado: false,
+        esproveedor: false,
+        escliente: false,
         iduseralta:'',
         fecalta:'',
         iduserumod:'',
@@ -260,7 +309,7 @@
 
     computed: {
       formTitle () {
-        return this.editedIndex === -1 ? 'Nueva empresa' : 'Actualizar empresa'
+        return this.editedIndex === -1 ? 'Nueva persona' : 'Actualizar persona'
       },
     },
 
@@ -278,23 +327,33 @@
     methods: {
         crearPDF(){
             var columns = [
-                    {title: "Razon Social", dataKey: "nombre"},
-                    {title: "CUIT", dataKey: "cuit"},
-                    {title: "Dirección", dataKey: "direccion"}, 
-                    {title: "Localidad", dataKey: "localidad"}, 
+                    {title: "Nombre", dataKey: "nombre"},
+                    {title: "eMail", dataKey: "emailpersonal"}, 
+                    {title: "Teléfono", dataKey: "telefonopersonal"}, 
+                    {title: "Maneja Fondos", dataKey: "manejafondos"},
+                    {title: "DIR", dataKey: "esdirector"},
+                    {title: "EP", dataKey: "esep"},
+                    {title: "LP", dataKey: "eslp"},
+                    {title: "CP", dataKey: "escp"},
+                    {title: "Empleado", dataKey: "esempleado"},
+                    {title: "Prov", dataKey: "esproveedor"},
+                    {title: "Cli", dataKey: "escliente"},
+                    {title: "Domicilio", dataKey: "domicilio"}, 
+                    {title: "Localidad", dataKey: "localidad"},
                     {title: "C.P.", dataKey: "cpostal"},
                     {title: "Provincia", dataKey: "provincia"}, 
                     {title: "Pais", dataKey: "pais"}, 
-                    {title: "Teléfono", dataKey: "telefono"}, 
-                    {title: "eMail", dataKey: "email"}, 
-                    {title: "Web Page", dataKey: "webpage"},
+                    {title: "Tipo Doc.", dataKey: "tipodocumento"},
+                    {title: "Número", dataKey: "numdocumento"},
                     {title: "Activo", dataKey: "activo"}
             ];
             var rows = [];
 
-            this.empresas.map(function(x){
-                    rows.push({nombre:x.nombre,cuit:x.cuit,direccion:x.direccion,localidad:x.localidad,cpostal:x.cpostal,provincia:x.provincia,pais:x.pais,
-                    telefono:x.telefono,email:x.email,webpage:x.webpage,activo:x.activo});
+            this.personas.map(function(x){
+                    rows.push({nombre:x.nombre,emailpersonal:x.emailpersonal,
+                    telefonopersonal:x.telefonopersonal,manejafondos:x.manejafondos, esdirector:x.esdirector, esep:x.esep,eslp:x.eslp,escp:x.escp,
+                    esempleado:x.esempleado, esproveedor:x.esproveedor,escliente:x.escliente,
+                    domicilio:x.domicilio,localidad:x.localidad,cpostal: x.cpostal, provincia:x.provincia,pais:x.pais,tipodocumento:x.tipodocumento,numdocumento:x.numdocumento,activo:x.activo});
             });
 
             // Only pt supported (not mm or in)
@@ -302,18 +361,18 @@
             doc.autoTable(columns, rows, {
                 margin: {top: 60},
                 addPageContent: function(data) {
-                    doc.text("Listado de Empresas", 40, 30);
+                    doc.text("Listado de Personas", 40, 30);
                 }
             });
-            doc.save('Empresas.pdf');
+            doc.save('Personas.pdf');
         },
         listar(){
             let me=this;
             let header={"Authorization" : "Bearer " + this.$store.state.token};
             let configuracion= {headers : header};
-            axios.get('api/Empresas/Listar',configuracion).then(function(response){
+            axios.get('api/Personas/Listar',configuracion).then(function(response){
                 //console.log(response);
-                me.empresas=response.data;
+                me.personas=response.data;
             }).catch(function(error){
                 me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
                 me.snackbar = true;
@@ -368,13 +427,16 @@
             this.provinciaId=item.provinciaId;
             this.paisId=item.paisId;
             this.nombre=item.nombre;
-            this.cuit=item.cuit;
-            this.direccion=item.direccion;
+            this.domicilio=item.domicilio;
             this.localidad=item.localidad;
-            this.cpostal=item.cpostal;
-            this.telefono=item.telefono;
-            this.email=item.email;
-            this.webpage=item.webpage;
+            this.cpostal=item.cpostal;                
+            this.emailpersonal=item.emailpersonal;
+            this.telefonopersonal=item.telefonopersonal;
+            this.tipodocumento=item.tipodocumento;
+            this.numdocumento=item.numdocumento;
+            this.esempleado=item.esempleado;
+            this.esproveedor=item.esproveedor;
+            this.escliente=item.escliente;
             this.iduseralta=item.iduseralta;
             this.fecalta=item.fecalta;
             this.iduserumod=item.iduserumod;
@@ -388,7 +450,7 @@
             if (result) {
                 let header={"Authorization" : "Bearer " + this.$store.state.token};
                 let configuracion= {headers : header};
-                axios.delete('api/Empresas/Eliminar/'+item.id,configuracion).then(function(response){
+                axios.delete('api/Personas/Eliminar/'+item.id,configuracion).then(function(response){
                     me.close();
                         me.listar();
                         me.limpiar();
@@ -405,17 +467,20 @@
 
         },
         limpiar(){
-            this.provinciasf=this.provincias;
             this.id="";
             this.paisId="";
             this.provinciaId="";
             this.nombre="";
-            this.cuit="";
-            this.direccion="";
+            this.domicilio="";
             this.localidad="";
-            this.telefono="";
-            this.email="";
-            this.webpage="";
+            this.cpostal="";
+            this.emailpersonal="";
+            this.telefonopersonal="";
+            this.tipodocumento="";
+            this.numdocumento="";
+            this.esempleado="";
+            this.esproveedor="";
+            this.escliente="";   
             this.iduseralta = "";
             this.fecalta = "";
             this.iduserumod = "";
@@ -434,22 +499,25 @@
                 //Código para editar
                 //Código para guardar
                 let me=this;
-                axios.put('api/Empresas/Actualizar',{
-                    'Id':me.id,
-                    'paisId':me.paisId,
-                    'provinciaId':me.provinciaId,
+                axios.put('api/Personas/Actualizar',{
+                    'Id': me.id,
+                    'paisId': me.paisId,
+                    'provinciaId': me.provinciaId,
                     'nombre': me.nombre,
-                    'cuit': me.cuit,
-                    'direccion': me.direccion,
+                    'domicilio': me.domicilio,
                     'localidad': me.localidad,
                     'cpostal': me.cpostal,
-                    'telefono': me.telefono,
-                    'email': me.email,
-                    'webpage': me.webpage,
+                    'emailpersonal': me.emailpersonal,
+                    'telefonopersonal': me.telefonopersonal,
+                    'tipodocumento': me.tipodocumento,
+                    'numdocumento': me.numdocumento,
+                    'esempleado': me.esempleado,
+                    'esproveedor': me.esproveedor,
+                    'escliente': me.escliente,
                     'iduseralta': me.iduseralta,
                     'fecalta': me.fecalta,
                     'iduserumod': me.$store.state.usuario.idusuario,
-                    'fecumod': new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString()                        
+                    'fecumod': new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString()                              
                 },configuracion).then(function(response){
                     me.close();
                     me.listar();
@@ -462,17 +530,20 @@
             } else {
                 //Código para guardar
                 let me=this;
-                axios.post('api/Empresas/Crear',{
+                axios.post('api/Personas/Crear',{
                     'paisId':me.paisId,
                     'provinciaId':me.provinciaId,
                     'nombre': me.nombre,
-                    'cuit': me.cuit,
-                    'direccion': me.direccion,
+                    'domicilio': me.domicilio,
                     'localidad': me.localidad,
                     'cpostal': me.cpostal,
-                    'telefono': me.telefono,
-                    'email': me.email,
-                    'webpage': me.webpage,
+                    'emailpersonal': me.emailpersonal,
+                    'telefonopersonal': me.telefonopersonal,
+                    'tipodocumento': me.tipodocumento,
+                    'numdocumento': me.numdocumento,
+                    'esempleado': me.esempleado,
+                    'esproveedor': me.esproveedor,
+                    'escliente': me.escliente,
                     'iduseralta': me.$store.state.usuario.idusuario                           
                 },configuracion).then(function(response){
                     me.close();
@@ -489,8 +560,8 @@
             this.valida=0;
             this.validaMensaje=[];
 
-            if (this.nombre.length<3 || this.nombre.length>50){
-                this.validaMensaje.push("La empresa debe tener más de 3 caracteres y menos de 50 caracteres.");
+            if (this.nombre.length<3 || this.nombre.length>100){
+                this.validaMensaje.push("El nombre debe tener más de 3 caracteres y menos de 100 caracteres.");
             }
             if (!this.paisId){
                 this.validaMensaje.push("Seleccione un país.");
@@ -506,7 +577,7 @@
         activarDesactivarMostrar(accion,item){
             this.adModal=1;
             this.adNombre=item.nombre;
-            this.adId=item.id;                
+            this.adId=item.id;
             if (accion==1){
                 this.adAccion=1;
             }
@@ -524,12 +595,12 @@
             let me=this;
             let header={"Authorization" : "Bearer " + this.$store.state.token};
             let configuracion= {headers : header};
-            axios.put('api/Empresas/Activar/'+this.adId,{},configuracion).then(function(response){
+            axios.put('api/Personas/Activar/'+this.adId,{},configuracion).then(function(response){
                 me.adModal=0;
                 me.adAccion=0;
                 me.adNombre="";
                 me.adId="";
-                me.listar();                       
+                me.listar();
             }).catch(function(error){
                 me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
                 me.snackbar = true;
@@ -540,12 +611,12 @@
             let me=this;
             let header={"Authorization" : "Bearer " + this.$store.state.token};
             let configuracion= {headers : header};
-            axios.put('api/Empresas/Desactivar/'+this.adId,{},configuracion).then(function(response){
+            axios.put('api/Personas/Desactivar/'+this.adId,{},configuracion).then(function(response){
                 me.adModal=0;
                 me.adAccion=0;
                 me.adNombre="";
                 me.adId="";
-                me.listar();                       
+                me.listar();
             }).catch(function(error){
                 me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
                 me.snackbar = true;

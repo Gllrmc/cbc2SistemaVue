@@ -3,7 +3,7 @@
         <v-col>
             <v-data-table
             :headers="headers"
-            :items="empresas"
+            :items="paises"
             :search="search"
             class="elevation-1"
             no-data-text="Nada para mostrar"
@@ -13,7 +13,7 @@
                     <div class="ma-2">
                         <v-btn small @click="crearPDF()"><v-icon>print</v-icon></v-btn>
                     </div>
-                    <v-toolbar-title>Empresas</v-toolbar-title>
+                    <v-toolbar-title>Paises</v-toolbar-title>
                     <v-snackbar
                         v-model="snackbar"
                         :timeout="timeout"
@@ -50,58 +50,12 @@
                         <v-card-text>
                             <v-container grid-list-md>
                                 <v-row dense>
-                                    <v-col cols="12" sm="9" md="9">
-                                        <v-text-field v-model="nombre" label="Empresa">
-                                        </v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" sm="3" md="3">
-                                        <v-text-field v-model="cuit" label="CUIT">
-                                        </v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" sm="9" md="9">
-                                        <v-text-field v-model="direccion" label="Dirección">
-                                        </v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" sm="3" md="3">
-                                        <v-text-field v-model="localidad" label="Localidad">
-                                        </v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" sm="5" md="5">
-                                        <v-autocomplete 
-                                            v-model="paisId"
-                                            clearable
-                                            :items = "paises"
-                                            :search-input.sync="searchpa"
-                                            @change="filterProvincias()"
-                                            label = "País">
-                                        </v-autocomplete>
-                                    </v-col>
-                                    <v-col cols="12" sm="5" md="5">
-                                        <v-autocomplete 
-                                            v-model="provinciaId"
-                                            clearable
-                                            :items = "provinciasf" 
-                                            :search-input.sync="searchpr"                                    
-                                            @change="asignaPais()"                                   
-                                            label = "Provincia">
-                                        </v-autocomplete>
-                                    </v-col>
-                                    <v-col cols="12" sm="2" md="2">
-                                        <v-text-field v-model="cpostal" label="C.P.">
-                                        </v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" sm="4" md="4">
-                                        <v-text-field v-model="telefono" label="telefono">
-                                        </v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" sm="4" md="4">
-                                        <v-text-field v-model="email" label="eMail">
-                                        </v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" sm="4" md="4">
-                                        <v-text-field v-model="webpage" label="Web Page">
-                                        </v-text-field>
-                                    </v-col>
+                                    <v-flex cols="12" sm="12" md="12">
+                                        <v-text-field v-model="nombre" label="Pais"></v-text-field>
+                                    </v-flex>
+                                    <v-flex cols="12" sm="12" md="12">
+                                        <v-text-field v-model="cuit" label="CUIT"></v-text-field>
+                                    </v-flex>
                                     <v-col cols="12" sm="12" md="12" v-show="valida">
                                         <div class="red--text" v-for="v in validaMensaje" :key="v" v-text="v">
                                         </div>
@@ -206,24 +160,20 @@
         snackbar:false,
         snacktext: '',
         timeout: 4000,
-        empresas:[],
+                paises:[],
+                paises: [],
+                provincias: [],               
+                provinciasf: [],               
+
         paises: [],
-        provincias: [],               
-        provinciasf: [],
+        roles:[],
+        personas: [],
+
         dialog: false,
         headers: [
             { text: '[Opciones]', value: 'actions', align: 'center', sortable: false },
-            { text: 'Razon Social', value: 'nombre', align: 'start', sortable: true },
+            { text: 'Pais', value: 'nombre', align: 'start', sortable: true },
             { text: 'CUIT', value: 'cuit', align: 'start', sortable: true },
-            { text: 'Direccion', value: 'direccion', align: 'start', sortable: true },
-            { text: 'Localidad', value: 'localidad', align: 'start', sortable: true },
-            { text: 'C.P.', value: 'cpostal', align: 'start', sortable: true },
-            { text: 'Provincia', value: 'provincia', align: 'start', sortable: true  },
-            { text: 'Pais', value: 'pais', align: 'start', sortable: true  },
-            { text: 'Telefono', value: 'telefono', align: 'start', sortable: true  },
-            { text: 'eMail', value: 'email', align: 'start', sortable: true  },
-            { text: 'Web Page', value: 'webpage', align: 'start', sortable: true  },
-            { text: 'Teléfono', value: 'telefono', align: 'start', sortable: true },
             { text: 'Estado', value: 'activo', align: 'center', sortable: true  },
             { text: 'Creador Id', value: 'iduseralta', align: 'center', sortable: true },
             { text: 'Fecha Hora Creación', value: 'fecalta', align: 'start', sortable: true },
@@ -231,20 +181,10 @@
             { text: 'Fecha Hora Ult.Mod.', value: 'fecumod', align: 'start', sortable: true }                   
         ],
         search: '',
-        searchpa: '',
-        searchpr: '',
         editedIndex: -1,
-        id: '',
-        paisId:'',
-        provinciaId:'',
-        nombre: '',
-        cuit: '',
-        direccion: '',
-        localidad: '',
-        cpostal:'',
-        email: '',
-        telefono: '',
-        webpage: '',
+        id:'',
+        nombre:'',
+        cuit:'',
         iduseralta:'',
         fecalta:'',
         iduserumod:'',
@@ -260,7 +200,7 @@
 
     computed: {
       formTitle () {
-        return this.editedIndex === -1 ? 'Nueva empresa' : 'Actualizar empresa'
+        return this.editedIndex === -1 ? 'Nuevo país' : 'Actualizar país'
       },
     },
 
@@ -271,30 +211,21 @@
     },
 
     created () {
-        this.select();
         this.listar()
     },
 
     methods: {
         crearPDF(){
             var columns = [
-                    {title: "Razon Social", dataKey: "nombre"},
+                    {title: "Id", dataKey: "id"},
+                    {title: "Pais", dataKey: "nombre"},
                     {title: "CUIT", dataKey: "cuit"},
-                    {title: "Dirección", dataKey: "direccion"}, 
-                    {title: "Localidad", dataKey: "localidad"}, 
-                    {title: "C.P.", dataKey: "cpostal"},
-                    {title: "Provincia", dataKey: "provincia"}, 
-                    {title: "Pais", dataKey: "pais"}, 
-                    {title: "Teléfono", dataKey: "telefono"}, 
-                    {title: "eMail", dataKey: "email"}, 
-                    {title: "Web Page", dataKey: "webpage"},
-                    {title: "Activo", dataKey: "activo"}
+                    {title: "Estado", dataKey: "activo"},
             ];
             var rows = [];
 
-            this.empresas.map(function(x){
-                    rows.push({nombre:x.nombre,cuit:x.cuit,direccion:x.direccion,localidad:x.localidad,cpostal:x.cpostal,provincia:x.provincia,pais:x.pais,
-                    telefono:x.telefono,email:x.email,webpage:x.webpage,activo:x.activo});
+            this.paises.map(function(x){
+                    rows.push({id:x.id,nombre:x.nombre, cuit:x.cuit,activo:x.activo ? "Activo" : "Inactivo"});
             });
 
             // Only pt supported (not mm or in)
@@ -302,66 +233,23 @@
             doc.autoTable(columns, rows, {
                 margin: {top: 60},
                 addPageContent: function(data) {
-                    doc.text("Listado de Empresas", 40, 30);
+                    doc.text("Listado de Paises", 40, 30);
                 }
             });
-            doc.save('Empresas.pdf');
+            doc.save('Paises.pdf');
         },
         listar(){
             let me=this;
             let header={"Authorization" : "Bearer " + this.$store.state.token};
             let configuracion= {headers : header};
-            axios.get('api/Empresas/Listar',configuracion).then(function(response){
+            axios.get('api/Paises/Listar',configuracion).then(function(response){
                 //console.log(response);
-                me.empresas=response.data;
+                me.paises=response.data;
             }).catch(function(error){
                 me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
                 me.snackbar = true;
                 console.log(error);
             });
-        },
-        select(){
-            let me=this;
-            var paisesArray=[];
-            var provinciasArray=[];
-            let header={"Authorization" : "Bearer " + this.$store.state.token};
-            let configuracion= {headers : header};
-            axios.get('api/Paises/Select',configuracion).then(function(response){
-                // console.log(response);
-                paisesArray=response.data;
-                paisesArray.map(function(x){
-                    me.paises.push({text: x.nombre,value:x.id});
-                });
-            }).catch(function(error){
-                me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
-                me.snackbar = true;
-                console.log(error);
-            });
-            axios.get('api/Provincias/Select',configuracion).then(function(response){
-                // console.log(response);
-                provinciasArray=response.data;
-                provinciasArray.map(function(x){
-                    me.provincias.push({text: x.nombre,value:x.id, pais: x.paisId});
-                    me.provinciasf=me.provincias;
-                });
-            }).catch(function(error){
-                me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
-                me.snackbar = true;
-                console.log(error);
-            });
-        },
-        asignaPais(){
-            var ii = this.provincias.findIndex(p => p.value === this.provinciaId);
-            this.paisId = this.provincias[ii].pais;
-        },
-        filterProvincias(){
-            this.provinciasf = this.provincias.filter(x => x.pais === this.paisId);
-            if (provinciaId) {
-                var ii = this.provincias.findIndex(p => p.value === this.provinciaId);
-                if (!this.paisId === this.provincias[ii].pais){
-                    this.provinciaId="";
-                }
-            }
         },
         editItem (item) {
             this.id=item.id;
@@ -388,7 +276,7 @@
             if (result) {
                 let header={"Authorization" : "Bearer " + this.$store.state.token};
                 let configuracion= {headers : header};
-                axios.delete('api/Empresas/Eliminar/'+item.id,configuracion).then(function(response){
+                axios.delete('api/Paises/Eliminar/'+item.id,configuracion).then(function(response){
                     me.close();
                         me.listar();
                         me.limpiar();
@@ -405,22 +293,14 @@
 
         },
         limpiar(){
-            this.provinciasf=this.provincias;
             this.id="";
-            this.paisId="";
-            this.provinciaId="";
             this.nombre="";
             this.cuit="";
-            this.direccion="";
-            this.localidad="";
-            this.telefono="";
-            this.email="";
-            this.webpage="";
             this.iduseralta = "";
             this.fecalta = "";
             this.iduserumod = "";
             this.fecumod = "";
-            this.activo = false;                  
+            this.activo = false;
             this.editedIndex=-1;
         },
         guardar () {
@@ -434,22 +314,14 @@
                 //Código para editar
                 //Código para guardar
                 let me=this;
-                axios.put('api/Empresas/Actualizar',{
-                    'Id':me.id,
-                    'paisId':me.paisId,
-                    'provinciaId':me.provinciaId,
+                axios.put('api/Paises/Actualizar',{
+                    'id':me.id,
                     'nombre': me.nombre,
-                    'cuit': me.cuit,
-                    'direccion': me.direccion,
-                    'localidad': me.localidad,
-                    'cpostal': me.cpostal,
-                    'telefono': me.telefono,
-                    'email': me.email,
-                    'webpage': me.webpage,
+                    'cuit':me.cuit,
                     'iduseralta': me.iduseralta,
                     'fecalta': me.fecalta,
                     'iduserumod': me.$store.state.usuario.idusuario,
-                    'fecumod': new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString()                        
+                    'fecumod': new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString()                             
                 },configuracion).then(function(response){
                     me.close();
                     me.listar();
@@ -462,18 +334,10 @@
             } else {
                 //Código para guardar
                 let me=this;
-                axios.post('api/Empresas/Crear',{
-                    'paisId':me.paisId,
-                    'provinciaId':me.provinciaId,
+                axios.post('api/Paises/Crear',{
                     'nombre': me.nombre,
                     'cuit': me.cuit,
-                    'direccion': me.direccion,
-                    'localidad': me.localidad,
-                    'cpostal': me.cpostal,
-                    'telefono': me.telefono,
-                    'email': me.email,
-                    'webpage': me.webpage,
-                    'iduseralta': me.$store.state.usuario.idusuario                           
+                    'iduseralta': me.$store.state.usuario.idusuario                         
                 },configuracion).then(function(response){
                     me.close();
                     me.listar();
@@ -490,13 +354,7 @@
             this.validaMensaje=[];
 
             if (this.nombre.length<3 || this.nombre.length>50){
-                this.validaMensaje.push("La empresa debe tener más de 3 caracteres y menos de 50 caracteres.");
-            }
-            if (!this.paisId){
-                this.validaMensaje.push("Seleccione un país.");
-            }
-            if (!this.provinciaId){
-                this.validaMensaje.push("Seleccione una provincia.");
+                this.validaMensaje.push("El nombre del pais no debe tener menos de 3 caracteres y mas de 50 caracteres.");
             }
             if (this.validaMensaje.length){
                 this.valida=1;
@@ -524,7 +382,7 @@
             let me=this;
             let header={"Authorization" : "Bearer " + this.$store.state.token};
             let configuracion= {headers : header};
-            axios.put('api/Empresas/Activar/'+this.adId,{},configuracion).then(function(response){
+            axios.put('api/Paises/Activar/'+this.adId,{},configuracion).then(function(response){
                 me.adModal=0;
                 me.adAccion=0;
                 me.adNombre="";
@@ -540,7 +398,7 @@
             let me=this;
             let header={"Authorization" : "Bearer " + this.$store.state.token};
             let configuracion= {headers : header};
-            axios.put('api/Empresas/Desactivar/'+this.adId,{},configuracion).then(function(response){
+            axios.put('api/Paises/Desactivar/'+this.adId,{},configuracion).then(function(response){
                 me.adModal=0;
                 me.adAccion=0;
                 me.adNombre="";

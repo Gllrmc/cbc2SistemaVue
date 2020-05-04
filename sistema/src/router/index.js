@@ -4,6 +4,9 @@ import Home from '../views/Home.vue'
 import Login from '../components/Login.vue'
 import Banco from '../components/Banco.vue'
 import Conbanco from '../components/Conbanco.vue'
+import Pais from '../components/Pais.vue'
+import Persona from '../components/Persona.vue'
+import Provincia from '../components/Provincia.vue'
 import Empresa from '../components/Empresa.vue'
 import Rol from '../components/Rol.vue'
 import Usuario from '../components/Usuario.vue'
@@ -31,6 +34,21 @@ Vue.use(VueRouter)
     name: 'conbancos',
     component: Conbanco
   },
+  {
+    path: '/paises',
+    name: 'paises',
+    component: Pais
+  },   
+  {
+    path: '/personas',
+    name: 'personas',
+    component: Persona
+  },   
+  {
+    path: '/provincias',
+    name: 'provincias',
+    component: Provincia
+  },   
   {
     path: '/empresas',
     name: 'empresas',
