@@ -3,7 +3,7 @@
         <v-col>
             <v-data-table
             :headers="headers"
-            :items="provincias"
+            :items="grpconceptos"
             :search="search"
             class="elevation-1"
             no-data-text="Nada para mostrar"
@@ -13,7 +13,7 @@
                     <div class="ma-2">
                         <v-btn small @click="crearPDF()"><v-icon>print</v-icon></v-btn>
                     </div>
-                    <v-toolbar-title>Provincias</v-toolbar-title>
+                    <v-toolbar-title>Grupo de Conceptos</v-toolbar-title>
                     <v-snackbar
                         v-model="snackbar"
                         :timeout="timeout"
@@ -50,13 +50,22 @@
                         <v-card-text>
                             <v-container grid-list-md>
                                 <v-row dense>
-                                    <v-col cols="12" sm="12" md="12">
-                                        <v-select v-model="paisId"
-                                        :items = "paises" label = "País">
-                                        </v-select>
-                                    </v-col>                                
-                                    <v-col cols="12" sm="12" md="12">
-                                        <v-text-field v-model="nombre" label="Provincia"></v-text-field>
+                                    <v-col cols="12" sm="4" md="4">
+                                        <v-autocomplete 
+                                            v-model="empresaId"
+                                            clearable
+                                            :items = "empresas"
+                                            :search-input.sync="searchem"                                     
+                                            label="Empresa">
+                                        </v-autocomplete>
+                                    </v-col>
+                                    <v-col cols="12" sm="2" md="2">
+                                        <v-text-field v-model="orden" label="Código">
+                                        </v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" sm="6" md="6">
+                                        <v-text-field v-model="nombre" label="Grupo">
+                                        </v-text-field>
                                     </v-col>
                                     <v-col cols="12" sm="12" md="12" v-show="valida">
                                         <div class="red--text" v-for="v in validaMensaje" :key="v" v-text="v">
@@ -74,13 +83,13 @@
                     </v-dialog>
                     <v-dialog v-model="adModal" max-width="390">
                         <v-card>
-                            <v-card-title class="headline" v-if="adAccion==1">¿Activar Provincia?</v-card-title>
-                            <v-card-title class="headline" v-if="adAccion==2">Bloquear Provincia?</v-card-title>
+                            <v-card-title class="headline" v-if="adAccion==1">¿Activar Grupo de Concepto?</v-card-title>
+                            <v-card-title class="headline" v-if="adAccion==2">Bloquear Grupo Concepto?</v-card-title>
                             <v-card-text>
                                 Estás a punto de 
                                 <span v-if="adAccion==1">Activar </span>
                                 <span v-if="adAccion==2">Bloquear </span>
-                                la Provincia: {{ adNombre }}
+                                el Grupo de Concepto: {{ adNombre }}
                             </v-card-text>
                             <v-card-actions>
                                 <v-spacer/>
@@ -162,16 +171,17 @@
         snackbar:false,
         snacktext: '',
         timeout: 4000,
-        provincias:[],
+        grpconceptos:[],
         paises: [],
         provincias: [],               
         provinciasf: [],
         dialog: false,
         headers: [
             { text: '[Opciones]', value: 'actions', align: 'center', sortable: false },
-            { text: 'Opciones', value: 'opciones', align: 'start', sortable: false },
-            { text: 'Pais', value: 'pais', align: 'start', sortable: true },
-            { text: 'Provincia', value: 'nombre', align: 'start', sortable: true},
+            { text: 'Id Empresa', value: 'empresaId', align: 'start', sortable: true },
+            { text: 'Empresa', value: 'empresa', align: 'start', sortable: true },
+            { text: 'Código', value: 'orden', align: 'start', sortable: true },
+            { text: 'Nombre de Grupo', value: 'nombre', align: 'start', sortable: true },
             { text: 'Estado', value: 'activo', align: 'center', sortable: true  },
             { text: 'Creador Id', value: 'iduseralta', align: 'center', sortable: true },
             { text: 'Fecha Hora Creación', value: 'fecalta', align: 'start', sortable: true },
@@ -179,12 +189,11 @@
             { text: 'Fecha Hora Ult.Mod.', value: 'fecumod', align: 'start', sortable: true }                   
         ],
         search: '',
-        searchpa: '',
-        searchpr: '',
         editedIndex: -1,
-        id:'',
-        nombre:'',
-        paisId:'',
+        id: '',
+        orden: '',
+        nombre: '',
+        empresaId: '',
         iduseralta:'',
         fecalta:'',
         iduserumod:'',
@@ -200,7 +209,7 @@
 
     computed: {
       formTitle () {
-        return this.editedIndex === -1 ? 'Nueva provincia' : 'Actualizar provincia'
+        return this.editedIndex === -1 ? 'Nueva Grupo' : 'Actualizar Grupo'
       },
     },
 
@@ -218,14 +227,16 @@
     methods: {
         crearPDF(){
             var columns = [
-                    {title: "Id", dataKey: "id"},
-                    {title: "Provincia", dataKey: "nombre"},
-                    {title: "Estado", dataKey: "activo"},
+                    {title: "Id Empresa", dataKey: "empresaId"},
+                    {title: "Empresa", dataKey: "empresa"},
+                    {title: "Orden", dataKey: "orden"},
+                    {title: "Grupo Concepto", dataKey: "nombre"},
+                    {title: "Activo", dataKey: "activo"}
             ];
             var rows = [];
 
-            this.provincias.map(function(x){
-                    rows.push({id:x.id,nombre:x.nombre,activo:x.activo ? "Activo" : "Inactivo"});
+            this.grpconceptos.map(function(x){
+                    rows.push({nombre:x.nombre,empresaId:x.empresaId,empresa:x.empresa,orden:x.orden,activo:x.activo});
             });
 
             // Only pt supported (not mm or in)
@@ -233,18 +244,18 @@
             doc.autoTable(columns, rows, {
                 margin: {top: 60},
                 addPageContent: function(data) {
-                    doc.text("Listado de Provincias", 40, 30);
+                    doc.text("Listado de Grupo de Conceptos", 40, 30);
                 }
             });
-            doc.save('Provincias.pdf');
+            doc.save('grpconceptos.pdf');
         },
         listar(){
             let me=this;
             let header={"Authorization" : "Bearer " + this.$store.state.token};
             let configuracion= {headers : header};
-            axios.get('api/Provincias/Listar',configuracion).then(function(response){
+            axios.get('api/Grpconceptos/Listar',configuracion).then(function(response){
                 //console.log(response);
-                me.provincias=response.data;
+                me.grpconceptos=response.data;
             }).catch(function(error){
                 me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
                 me.snackbar = true;
@@ -253,15 +264,14 @@
         },
         select(){
             let me=this;
-            var paisesArray=[];
-            var provinciasArray=[];
+            var empresasArray=[];
             let header={"Authorization" : "Bearer " + this.$store.state.token};
             let configuracion= {headers : header};
-            axios.get('api/Paises/Select',configuracion).then(function(response){
+            axios.get('api/Empresas/Select',configuracion).then(function(response){
                 // console.log(response);
-                paisesArray=response.data;
-                paisesArray.map(function(x){
-                    me.paises.push({text: x.nombre,value:x.id});
+                empresasArray=response.data;
+                empresasArray.map(function(x){
+                    me.empresas.push({text: x.nombre,value:x.id});
                 });
             }).catch(function(error){
                 me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
@@ -271,13 +281,14 @@
         },            
         editItem (item) {
             this.id=item.id;
+            this.empresaId=item.empresaId;
+            this.orden=item.orden;
             this.nombre=item.nombre;
-            this.paisId=item.paisId;
             this.iduseralta=item.iduseralta;
             this.fecalta=item.fecalta;
             this.iduserumod=item.iduserumod;
             this.fecumod=item.fecumod;
-            this.activo=item.activo;                   
+            this.activo=item.activo;                
             this.editedIndex=1;
             this.dialog = true
         },
@@ -286,7 +297,7 @@
             if (result) {
                 let header={"Authorization" : "Bearer " + this.$store.state.token};
                 let configuracion= {headers : header};
-                axios.delete('api/Provincias/Eliminar/'+item.id,configuracion).then(function(response){
+                axios.delete('api/Grpconceptos/Eliminar/'+item.id,configuracion).then(function(response){
                     me.close();
                         me.listar();
                         me.limpiar();
@@ -304,8 +315,9 @@
         },
         limpiar(){
             this.id="";
+            this.empresaId="";
+            this.orden="";
             this.nombre="";
-            this.paisId="";
             this.iduseralta = "";
             this.fecalta = "";
             this.iduserumod = "";
@@ -313,115 +325,122 @@
             this.activo = false;                  
             this.editedIndex=-1;
         },
-        guardar () {
-            if (this.validar()){
-                return;
-            }
-            var date = new Date();                
-            let header={"Authorization" : "Bearer " + this.$store.state.token};
-            let configuracion= {headers : header};
-            if (this.editedIndex > -1) {
-                //Código para editar
-                //Código para guardar
-                let me=this;
-                axios.put('api/Provincias/Actualizar',{
-                    'Id':me.id,
-                    'nombre': me.nombre,
-                    'paisId': me.paisId,
-                    'iduseralta': me.iduseralta,
-                    'fecalta': me.fecalta,
-                    'iduserumod': me.$store.state.usuario.idusuario,
-                    'fecumod': new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString()
-                },configuracion).then(function(response){
-                    me.close();
-                    me.listar();
-                    me.limpiar();                        
-                }).catch(function(error){
-                    me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
-                    me.snackbar = true;
-                    console.log(error);
-                });
-            } else {
-                //Código para guardar
-                let me=this;
-                axios.post('api/Provincias/Crear',{
-                    'nombre': me.nombre,
-                    'paisId': me.paisId,
-                    'iduseralta': me.$store.state.usuario.idusuario                         
-                },configuracion).then(function(response){
-                    me.close();
-                    me.listar();
-                    me.limpiar();                        
-                }).catch(function(error){
-                    me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
-                    me.snackbar = true;
-                    console.log(error);
-                });
-            }
-        },
-        validar(){
-            this.valida=0;
-            this.validaMensaje=[];
-            if (this.nombre.length<3 || this.nombre.length>50){
-                this.validaMensaje.push("El nombre de la provincia no debe tener menos de 3 caracteres y mas de 50 caracteres.");
-            }
-            if (!this.paisId){
-                this.validaMensaje.push("Seleccione un país.");
-            }                
-            if (this.validaMensaje.length){
-                this.valida=1;
-            }
-            return this.valida;
-        },
-        activarDesactivarMostrar(accion,item){
-            this.adModal=1;
-            this.adNombre=item.nombre;
-            this.adId=item.id;                
-            if (accion==1){
-                this.adAccion=1;
-            }
-            else if (accion==2){
-                this.adAccion=2;
-            }
-            else{
+            guardar () {
+                if (this.validar()){
+                    return;
+                }
+                var date = new Date();                
+                let header={"Authorization" : "Bearer " + this.$store.state.token};
+                let configuracion= {headers : header};
+                if (this.editedIndex > -1) {
+                    //Código para editar
+                    //Código para guardar
+                    let me=this;
+                    axios.put('api/Grpconceptos/Actualizar',{
+                        'Id':me.id,
+                        'empresaId': me.empresaId,
+                        'orden': me.orden,
+                        'nombre': me.nombre,
+                        'iduseralta': me.iduseralta,
+                        'fecalta': me.fecalta,
+                        'iduserumod': me.$store.state.usuario.idusuario,
+                        'fecumod': new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString()                        
+                    },configuracion).then(function(response){
+                        me.close();
+                        me.listar();
+                        me.limpiar();                        
+                    }).catch(function(error){
+                        me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
+                        me.snackbar = true;
+                        console.log(error);
+                    });
+                } else {
+                    //Código para guardar
+                    debugger;
+                    let me=this;
+                    axios.post('api/Grpconceptos/Crear',{
+                        'empresaId': me.empresaId,
+                        'orden': me.orden,
+                        'nombre': me.nombre,
+                        'iduseralta': me.$store.state.usuario.idusuario                           
+                    },configuracion).then(function(response){
+                        me.close();
+                        me.listar();
+                        me.limpiar();                        
+                    }).catch(function(error){
+                        me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
+                        me.snackbar = true;
+                        console.log(error);
+                    });
+                }
+            },
+            validar(){
+                this.valida=0;
+                this.validaMensaje=[];
+
+                if (this.nombre.length<3 || this.nombre.length>50){
+                    this.validaMensaje.push("El Grupo debe tener más de 3 caracteres y menos de 50 caracteres.");
+                }
+                if (!this.empresaId){
+                    this.validaMensaje.push("Seleccione una Empresa.");
+                }
+                if (!this.orden){
+                    this.validaMensaje.push("Seleccione Código.");
+                }                                
+                if (this.validaMensaje.length){
+                    this.valida=1;
+                }
+                return this.valida;
+            },
+            activarDesactivarMostrar(accion,item){
+                this.adModal=1;
+                this.adNombre=item.nombre;
+                this.adId=item.id;                
+                if (accion==1){
+                    this.adAccion=1;
+                }
+                else if (accion==2){
+                    this.adAccion=2;
+                }
+                else{
+                    this.adModal=0;
+                }
+            },
+            activarDesactivarCerrar(){
                 this.adModal=0;
+            },
+            activar(){
+                let me=this;
+                let header={"Authorization" : "Bearer " + this.$store.state.token};
+                let configuracion= {headers : header};
+                axios.put('api/Grpconceptos/Activar/'+this.adId,{},configuracion).then(function(response){
+                    me.adModal=0;
+                    me.adAccion=0;
+                    me.adNombre="";
+                    me.adId="";
+                    me.listar();                       
+                }).catch(function(error){
+                    me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
+                    me.snackbar = true;
+                    console.log(error);
+                });
+            },
+            desactivar(){
+                let me=this;
+                let header={"Authorization" : "Bearer " + this.$store.state.token};
+                let configuracion= {headers : header};
+                axios.put('api/Grpconceptos/Desactivar/'+this.adId,{},configuracion).then(function(response){
+                    me.adModal=0;
+                    me.adAccion=0;
+                    me.adNombre="";
+                    me.adId="";
+                    me.listar();                       
+                }).catch(function(error){
+                    me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
+                    me.snackbar = true;
+                    console.log(error);
+                });
             }
-        },
-        activarDesactivarCerrar(){
-            this.adModal=0;
-        },
-        activar(){
-            let me=this;
-            let header={"Authorization" : "Bearer " + this.$store.state.token};
-            let configuracion= {headers : header};
-            axios.put('api/Provincias/Activar/'+this.adId,{},configuracion).then(function(response){
-                me.adModal=0;
-                me.adAccion=0;
-                me.adNombre="";
-                me.adId="";
-                me.listar();                       
-            }).catch(function(error){
-                me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
-                me.snackbar = true;
-                console.log(error);
-            });
-        },
-        desactivar(){
-            let me=this;
-            let header={"Authorization" : "Bearer " + this.$store.state.token};
-            let configuracion= {headers : header};
-            axios.put('api/Provincias/Desactivar/'+this.adId,{},configuracion).then(function(response){
-                me.adModal=0;
-                me.adAccion=0;
-                me.adNombre="";
-                me.adId="";
-                me.listar();                       
-            }).catch(function(error){
-                me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
-                me.snackbar = true;
-                console.log(error);
-            });
-        }
     },
   }
 </script>

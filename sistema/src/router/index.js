@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 import Login from '../components/Login.vue'
 import Banco from '../components/Banco.vue'
 import Conbanco from '../components/Conbanco.vue'
+import Grpconcepto from '../components/Grpconcepto.vue'
 import Pais from '../components/Pais.vue'
 import Persona from '../components/Persona.vue'
 import Provincia from '../components/Provincia.vue'
@@ -33,6 +34,11 @@ Vue.use(VueRouter)
     path: '/conbancos',
     name: 'conbancos',
     component: Conbanco
+  },
+  {
+    path: '/grpconceptos',
+    name: 'grpconceptos',
+    component: Grpconcepto
   },
   {
     path: '/paises',

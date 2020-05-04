@@ -97,13 +97,13 @@
                     </v-dialog>
                     <v-dialog v-model="adModal" max-width="390">
                         <v-card>
-                            <v-card-title class="headline" v-if="adAccion==1">¿Activar Concepto de Banco?</v-card-title>
-                            <v-card-title class="headline" v-if="adAccion==2">Bloquear Concepto de Banco?</v-card-title>
+                            <v-card-title class="headline" v-if="adAccion==1">¿Activar Usuario?</v-card-title>
+                            <v-card-title class="headline" v-if="adAccion==2">Bloquear Usuario?</v-card-title>
                             <v-card-text>
                                 Estás a punto de 
                                 <span v-if="adAccion==1">Activar </span>
                                 <span v-if="adAccion==2">Bloquear </span>
-                                el Concepto de Banco: {{ adNombre }}
+                                el Usuario: {{ adNombre }}
                             </v-card-text>
                             <v-card-actions>
                                 <v-spacer/>

@@ -50,12 +50,12 @@
                         <v-card-text>
                             <v-container grid-list-md>
                                 <v-row dense>
-                                    <v-flex cols="12" sm="12" md="12">
+                                    <v-col cols="12" sm="12" md="12">
                                         <v-text-field v-model="nombre" label="Pais"></v-text-field>
-                                    </v-flex>
-                                    <v-flex cols="12" sm="12" md="12">
+                                    </v-col>
+                                    <v-col cols="12" sm="12" md="12">
                                         <v-text-field v-model="cuit" label="CUIT"></v-text-field>
-                                    </v-flex>
+                                    </v-col>
                                     <v-col cols="12" sm="12" md="12" v-show="valida">
                                         <div class="red--text" v-for="v in validaMensaje" :key="v" v-text="v">
                                         </div>
@@ -72,13 +72,13 @@
                     </v-dialog>
                     <v-dialog v-model="adModal" max-width="390">
                         <v-card>
-                            <v-card-title class="headline" v-if="adAccion==1">¿Activar Concepto de Banco?</v-card-title>
-                            <v-card-title class="headline" v-if="adAccion==2">Bloquear Concepto de Banco?</v-card-title>
+                            <v-card-title class="headline" v-if="adAccion==1">¿Activar Pais?</v-card-title>
+                            <v-card-title class="headline" v-if="adAccion==2">Bloquear Pais?</v-card-title>
                             <v-card-text>
                                 Estás a punto de 
                                 <span v-if="adAccion==1">Activar </span>
                                 <span v-if="adAccion==2">Bloquear </span>
-                                el Concepto de Banco: {{ adNombre }}
+                                el Pais: {{ adNombre }}
                             </v-card-text>
                             <v-card-actions>
                                 <v-spacer/>

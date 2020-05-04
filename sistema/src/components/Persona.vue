@@ -50,40 +50,40 @@
                         <v-card-text>
                             <v-container grid-list-md>
                                 <v-row dense>
-                                    <v-flex cols="12" sm="12" md="12">
+                                    <v-col cols="12" sm="12" md="12">
                                         <v-text-field v-model="nombre" label="Nombre">
                                         </v-text-field>
-                                    </v-flex>
-                                    <v-flex cols="12" sm="3" md="3">
+                                    </v-col>
+                                    <v-col cols="12" sm="3" md="3">
                                         <v-text-field v-model="emailpersonal" label="eMail">
                                         </v-text-field>
-                                    </v-flex>
-                                    <v-flex cols="12" sm="3" md="3">
+                                    </v-col>
+                                    <v-col cols="12" sm="3" md="3">
                                         <v-text-field v-model="telefonopersonal" label="Telefono">
                                         </v-text-field>
-                                    </v-flex>
-                                    <v-flex cols="12" sm="3" md="3">
+                                    </v-col>
+                                    <v-col cols="12" sm="3" md="3">
                                         <v-select v-model="tipodocumento" 
                                         :items="tipodocumentos" label="Tipo Doc.">
                                         </v-select>
-                                    </v-flex>                                
-                                    <v-flex cols="12" sm="3" md="3">
+                                    </v-col>                                
+                                    <v-col cols="12" sm="3" md="3">
                                         <v-text-field v-model="numdocumento" label="Nro. Documento">
                                         </v-text-field>
-                                    </v-flex>
-                                    <v-flex cols="12" sm="10" md="10">
+                                    </v-col>
+                                    <v-col cols="12" sm="10" md="10">
                                         <v-text-field v-model="domicilio" label="Domicilio">
                                         </v-text-field>
-                                    </v-flex>
-                                    <v-flex cols="12" sm="2" md="2">
+                                    </v-col>
+                                    <v-col cols="12" sm="2" md="2">
                                         <v-text-field v-model="cpostal" label="C.P.">
                                         </v-text-field>
-                                    </v-flex>
-                                    <v-flex cols="12" sm="4" md="4">
+                                    </v-col>
+                                    <v-col cols="12" sm="4" md="4">
                                         <v-text-field v-model="localidad" label="Localidad">
                                         </v-text-field>
-                                    </v-flex>
-                                    <v-flex cols="12" sm="4" md="4">
+                                    </v-col>
+                                    <v-col cols="12" sm="4" md="4">
                                         <v-autocomplete 
                                             v-model="paisId"
                                             clearable
@@ -92,8 +92,8 @@
                                             @change="filterProvincias()"
                                             label = "País">
                                         </v-autocomplete>
-                                    </v-flex>
-                                    <v-flex cols="12" sm="4" md="4">
+                                    </v-col>
+                                    <v-col cols="12" sm="4" md="4">
                                         <v-autocomplete 
                                             v-model="provinciaId"
                                             clearable
@@ -102,19 +102,19 @@
                                             @change="asignaPais()"                                   
                                             label = "Provincia">
                                         </v-autocomplete>
-                                    </v-flex>
-                                    <v-flex cols="12" sm="4" md="4">
+                                    </v-col>
+                                    <v-col cols="12" sm="4" md="4">
                                         <input type="checkbox" id="esempleado" v-model="esempleado">
                                         <label for = "esempleado"> Es empleado?</label>
-                                    </v-flex>                                
-                                    <v-flex cols="12" sm="4" md="4">
+                                    </v-col>                                
+                                    <v-col cols="12" sm="4" md="4">
                                         <input type="checkbox" id="esproveedor" v-model="esproveedor">
                                         <label for = "esproveedor"> Es proveedor?</label>
-                                    </v-flex>
-                                    <v-flex cols="12" sm="4" md="4">
+                                    </v-col>
+                                    <v-col cols="12" sm="4" md="4">
                                         <input type="checkbox" id="escliente" v-model="escliente">
                                         <label for = "escliente"> Es Cliente?</label>
-                                    </v-flex> 
+                                    </v-col> 
                                     <v-col cols="12" sm="12" md="12" v-show="valida">
                                         <div class="red--text" v-for="v in validaMensaje" :key="v" v-text="v">
                                         </div>
@@ -131,13 +131,13 @@
                     </v-dialog>
                     <v-dialog v-model="adModal" max-width="390">
                         <v-card>
-                            <v-card-title class="headline" v-if="adAccion==1">¿Activar Concepto de Banco?</v-card-title>
-                            <v-card-title class="headline" v-if="adAccion==2">Bloquear Concepto de Banco?</v-card-title>
+                            <v-card-title class="headline" v-if="adAccion==1">¿Activar Persona?</v-card-title>
+                            <v-card-title class="headline" v-if="adAccion==2">Bloquear Persona?</v-card-title>
                             <v-card-text>
                                 Estás a punto de 
                                 <span v-if="adAccion==1">Activar </span>
                                 <span v-if="adAccion==2">Bloquear </span>
-                                el Concepto de Banco: {{ adNombre }}
+                                la Persona: {{ adNombre }}
                             </v-card-text>
                             <v-card-actions>
                                 <v-spacer/>
