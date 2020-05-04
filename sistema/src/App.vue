@@ -218,7 +218,7 @@
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
-            <v-list-item :to="{ name: 'parametros'}">
+            <!-- <v-list-item :to="{ name: 'parametros'}">
               <v-list-item-action>
                 <v-icon>table_chart</v-icon>
               </v-list-item-action>
@@ -227,7 +227,7 @@
                   Parametros
                 </v-list-item-title>
               </v-list-item-content>
-            </v-list-item>            
+            </v-list-item>             -->
           </v-list-group>  
         </template>
         <template>

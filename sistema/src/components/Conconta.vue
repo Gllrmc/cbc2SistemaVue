@@ -3,7 +3,7 @@
         <v-col>
             <v-data-table
             :headers="headers"
-            :items="conbancos"
+            :items="concontas"
             :search="search"
             class="elevation-1"
             no-data-text="Nada para mostrar"
@@ -13,7 +13,7 @@
                     <div class="ma-2">
                         <v-btn small @click="crearPDF()"><v-icon>print</v-icon></v-btn>
                     </div>
-                    <v-toolbar-title>Conceptos Bancarios</v-toolbar-title>
+                    <v-toolbar-title>Conceptos Contables</v-toolbar-title>
                     <v-snackbar
                         v-model="snackbar"
                         :timeout="timeout"
@@ -69,15 +69,6 @@
                                             label="Grupo de Conceptos">
                                         </v-autocomplete>
                                     </v-col>
-                                    <v-col cols="12" sm="12" md="12">
-                                        <v-autocomplete 
-                                            v-model="bancoId"
-                                            clearable
-                                            :items = "bancos"
-                                            :search-input.sync="searchba"                                   
-                                            label="Banco">
-                                        </v-autocomplete>
-                                    </v-col>                            
                                     <v-col cols="12" sm="4" md="4">
                                         <v-text-field v-model="orden" label="Código">
                                         </v-text-field>
@@ -102,13 +93,13 @@
                     </v-dialog>
                     <v-dialog v-model="adModal" max-width="390">
                         <v-card>
-                            <v-card-title class="headline" v-if="adAccion==1">¿Activar Concepto de Banco?</v-card-title>
-                            <v-card-title class="headline" v-if="adAccion==2">Bloquear Concepto de Banco?</v-card-title>
+                            <v-card-title class="headline" v-if="adAccion==1">¿Activar Concepto Contable?</v-card-title>
+                            <v-card-title class="headline" v-if="adAccion==2">Bloquear Concepto Contable?</v-card-title>
                             <v-card-text>
                                 Estás a punto de 
                                 <span v-if="adAccion==1">Activar </span>
                                 <span v-if="adAccion==2">Bloquear </span>
-                                el Concepto de Banco: {{ adNombre }}
+                                el Concepto Contable: {{ adNombre }}
                             </v-card-text>
                             <v-card-actions>
                                 <v-spacer/>
@@ -190,16 +181,14 @@
         snackbar:false,
         snacktext: '',
         timeout: 4000,
-        conbancos: [],
+        concontas: [],
         empresas: [],
-        bancos: [],
         grpconceptos: [],
         dialog: false,
         headers: [
             { text: '[Opciones]', value: 'actions', align: 'center', sortable: false },
             { text: 'Empresa', value: 'empresa', align: 'start', sortable: true },
             { text: 'Grupo de Concepto', value: 'grpconcepto', align: 'start', sortable: true },
-            { text: 'Entidad Bancaria', value: 'banco', align: 'start', sortable: true },                    
             { text: 'Código', value: 'orden', align: 'start', sortable: true },
             { text: 'Nombre del Concepto', value: 'nombre', align: 'start', sortable: true },
             { text: 'Estado', value: 'activo', align: 'center', sortable: true  },
@@ -211,17 +200,14 @@
         search:'',
         searchem: '',
         searchco: '',
-        searchba: '',
         editedIndex: -1,
         id: '',
         empresaId: '',
         empresa: '',
-        grpconceptoId: '',
-        grpconcepto: '',
-        bancoId: '',
-        banco:'',
         orden: '',
         nombre: '',
+        grpconceptoId: '',
+        grpconcepto: '',
         iduseralta:'',
         fecalta:'',
         iduserumod:'',
@@ -237,7 +223,7 @@
 
     computed: {
       formTitle () {
-        return this.editedIndex === -1 ? 'Nuevo Concepto Bancario' : 'Actualizar Concepto Bancario'
+        return this.editedIndex === -1 ? 'Nueva Concepto Contable' : 'Actualizar Concepto Contable'
       },
     },
 
@@ -263,7 +249,7 @@
             ];
             var rows = [];
 
-            this.conbancos.map(function(x){
+            this.concontas.map(function(x){
                     rows.push({nombre:x.nombre,empresaId:x.empresaId,empresa:x.empresa,orden:x.orden,grpconcepto:x.grpconcepto,activo:x.activo});
             });
 
@@ -272,19 +258,19 @@
             doc.autoTable(columns, rows, {
                 margin: {top: 60},
                 addPageContent: function(data) {
-                    doc.text("Listado de Conceptos Bancarios", 40, 30);
+                    doc.text("Listado de Conceptos Contables", 40, 30);
                 }
             });
-            doc.save('Concbanco.pdf');
+            doc.save('Concconta.pdf');
         },
         listar(){
             let me=this;
             let header={"Authorization" : "Bearer " + this.$store.state.token};
             let configuracion= {headers : header};
             // console.log(configuracion);
-            axios.get('api/Conbancos/Listar',configuracion).then(function(response){
+            axios.get('api/Concontas/Listar',configuracion).then(function(response){
                 // console.log(response);
-                me.conbancos=response.data;
+                me.concontas=response.data;
             }).catch(function(error){
                 me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
                 me.snackbar = true;
@@ -294,7 +280,6 @@
         select(){
             let me=this;
             var empresasArray=[];
-            var bancosArray=[];
             let header={"Authorization" : "Bearer " + this.$store.state.token};
             let configuracion= {headers : header};
             axios.get('api/Empresas/Select',configuracion).then(function(response){
@@ -302,17 +287,6 @@
                 empresasArray=response.data;
                 empresasArray.map(function(x){
                     me.empresas.push({text: x.nombre,value:x.id});
-                });
-            }).catch(function(error){
-                me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
-                me.snackbar = true;
-                console.log(error);
-            });
-            axios.get('api/Bancos/Select',configuracion).then(function(response){
-                // console.log(response);
-                empresasArray=response.data;
-                empresasArray.map(function(x){
-                    me.bancos.push({text: x.nombre,value:x.id});
                 });
             }).catch(function(error){
                 me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
@@ -338,29 +312,27 @@
             });
         },                        
         editItem (item) {
-                this.id=item.id;
-                this.empresaId=item.empresaId;
-                this.selectGrpconceptos();
-                this.orden=item.orden;
-                this.nombre=item.nombre;
-                this.grpconceptoId=item.grpconceptoId;
-                this.grpconcepto=item.grpconcepto;
-                this.bancoId=item.bancoId;
-                this.banco=item.banco;
-                this.iduseralta=item.iduseralta;
-                this.fecalta=item.fecalta;
-                this.iduserumod=item.iduserumod;
-                this.fecumod=item.fecumod;
-                this.activo=item.activo;
-                this.editedIndex=1;
-                this.dialog = true
+            this.id=item.id;
+            this.empresaId=item.empresaId;
+            this.selectGrpconceptos();
+            this.orden=item.orden;
+            this.nombre=item.nombre;
+            this.grpconceptoId=item.grpconceptoId;
+            this.grpconcepto=item.grpconcepto;
+            this.iduseralta=item.iduseralta;
+            this.fecalta=item.fecalta;
+            this.iduserumod=item.iduserumod;
+            this.fecumod=item.fecumod;
+            this.activo=item.activo;                
+            this.editedIndex=1;
+            this.dialog = true
         },
         deleteItem (item) {
             var resulta = confirm('Esta seguro de querer borrar el registro?');
             if (result) {
                 let header={"Authorization" : "Bearer " + this.$store.state.token};
                 let configuracion= {headers : header};
-                axios.delete('api/Conbancos/Eliminar/'+item.id,configuracion).then(function(response){
+                axios.delete('api/Concontas/Eliminar/'+item.id,configuracion).then(function(response){
                     me.close();
                         me.listar();
                         me.limpiar();
@@ -383,29 +355,27 @@
             this.nombre="";
             this.grpconceptoId="";
             this.grpconcepto="";
-            this.bancoId="";
-            this.banco="";
             this.iduseralta = "";
             this.fecalta = "";
             this.iduserumod = "";
             this.fecumod = "";
+            this.activo = false;
             this.editedIndex=-1;
         },
         guardar () {
-            let me=this;
-            if (me.validar()){
+            if (this.validar()){
                 return;
             }
             var date = new Date();                
-            let header={"Authorization" : "Bearer " + me.$store.state.token};
+            let header={"Authorization" : "Bearer " + this.$store.state.token};
             let configuracion= {headers : header};
-            if (me.editedIndex > -1) {
+            if (this.editedIndex > -1) {
                 //Código para editar
                 //Código para guardar
-                axios.put('api/Conbancos/Actualizar',{
+                let me=this;
+                axios.put('api/Concontas/Actualizar',{
                     'Id':me.id,
                     'empresaId': me.empresaId,
-                    'bancoId': me.bancoId,
                     'orden': me.orden,
                     'nombre': me.nombre,
                     'grpconceptoId': me.grpconceptoId,
@@ -424,9 +394,9 @@
                 });
             } else {
                 //Código para guardar
-                axios.post('api/Conbancos/Crear',{
+                let me=this;
+                axios.post('api/Concontas/Crear',{
                     'empresaId': me.empresaId,
-                    'bancoId': me.bancoId,
                     'orden': me.orden,
                     'nombre': me.nombre,
                     'grpconceptoId': me.grpconceptoId,
@@ -445,6 +415,7 @@
         validar(){
             this.valida=0;
             this.validaMensaje=[];
+
             if (this.nombre.length<3 || this.nombre.length>50){
                 this.validaMensaje.push("El Nombre debe tener más de 3 caracteres y menos de 50 caracteres.");
             }
@@ -465,7 +436,6 @@
             }
             return this.valida;
         },
-
         activarDesactivarMostrar(accion,item){
             this.adModal=1;
             this.adNombre=item.nombre;
@@ -487,7 +457,7 @@
             let me=this;
             let header={"Authorization" : "Bearer " + this.$store.state.token};
             let configuracion= {headers : header};
-            axios.put('api/Conbancos/Activar/'+this.adId,{},configuracion).then(function(response){
+            axios.put('api/Concontas/Activar/'+this.adId,{},configuracion).then(function(response){
                 me.adModal=0;
                 me.adAccion=0;
                 me.adNombre="";
@@ -503,7 +473,7 @@
             let me=this;
             let header={"Authorization" : "Bearer " + this.$store.state.token};
             let configuracion= {headers : header};
-            axios.put('api/Conbancos/Desactivar/'+this.adId,{},configuracion).then(function(response){
+            axios.put('api/Concontas/Desactivar/'+this.adId,{},configuracion).then(function(response){
                 me.adModal=0;
                 me.adAccion=0;
                 me.adNombre="";
