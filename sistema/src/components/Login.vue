@@ -32,7 +32,7 @@
                     {{error}}
                 </v-row>
                 </v-card-text>
-                <v-card-actions>
+                <v-card-actions class="px-3 pb-3">
                 <v-spacer />
                 <v-btn @click="ingresar" color="primary">Ingresar</v-btn>
                 </v-card-actions>

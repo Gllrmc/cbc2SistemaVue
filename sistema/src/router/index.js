@@ -18,7 +18,7 @@ Vue.use(VueRouter)
   const routes = [
   {
     path: '/',
-    name: 'Home',
+    name: 'home',
     component: Home
   },
   {
@@ -86,7 +86,7 @@ Vue.use(VueRouter)
   }
 ]
 
-const router = new VueRouter({
+var router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes
