@@ -12,6 +12,7 @@ import Provincia from '../components/Provincia.vue'
 import Empresa from '../components/Empresa.vue'
 import Rol from '../components/Rol.vue'
 import Usuario from '../components/Usuario.vue'
+import store from '../store'
 
 Vue.use(VueRouter)
 
@@ -19,62 +20,142 @@ Vue.use(VueRouter)
   {
     path: '/',
     name: 'home',
-    component: Home
+    component: Home,
+    meta: {
+      administrador: true,
+      jefeadministracion: true,
+      conciliador: true,
+      asistadministracion: true,
+      dataentry: true
+    }
   },
   {
     path: '/login',
     name: 'login',
-    component: Login
+    component: Login,
+    meta:{
+      libre: true
+    }
   },
   {
     path: '/bancos',
     name: 'bancos',
-    component: Banco
+    component: Banco,
+    meta: {
+      administrador: true,
+      jefeadministracion: true,
+      conciliador: true,
+      asistadministracion: true,
+      dataentry: true
+    }
   },
   {
     path: '/conbancos',
     name: 'conbancos',
-    component: Conbanco
+    component: Conbanco,
+    meta: {
+      administrador: true,
+      jefeadministracion: true,
+      conciliador: true,
+      asistadministracion: true,
+      dataentry: true
+    }
   },
   {
     path: '/concontas',
     name: 'concontas',
-    component: Conconta
+    component: Conconta,
+    meta: {
+      administrador: true,
+      jefeadministracion: true,
+      conciliador: true,
+      asistadministracion: true,
+      dataentry: true
+    }
   },
   {
     path: '/grpconceptos',
     name: 'grpconceptos',
-    component: Grpconcepto
+    component: Grpconcepto,
+    meta: {
+      administrador: true,
+      jefeadministracion: true,
+      conciliador: true,
+      asistadministracion: true,
+      dataentry: true
+    }
   },
   {
     path: '/paises',
     name: 'paises',
-    component: Pais
+    component: Pais,
+    meta: {
+      administrador: true,
+      jefeadministracion: true,
+      conciliador: true,
+      asistadministracion: true,
+      dataentry: true
+    }
   },   
   {
     path: '/personas',
     name: 'personas',
-    component: Persona
+    component: Persona,
+    meta: {
+      administrador: true,
+      jefeadministracion: true,
+      conciliador: true,
+      asistadministracion: true,
+      dataentry: true
+    }
   },   
   {
     path: '/provincias',
     name: 'provincias',
-    component: Provincia
+    component: Provincia,
+    meta: {
+      administrador: true,
+      jefeadministracion: true,
+      conciliador: true,
+      asistadministracion: true,
+      dataentry: true
+    }
   },   
   {
     path: '/empresas',
     name: 'empresas',
-    component: Empresa
+    component: Empresa,
+    meta: {
+      administrador: true,
+      jefeadministracion: true,
+      conciliador: true,
+      asistadministracion: true,
+      dataentry: true
+    }
   },   
   {
     path: '/roles',
     name: 'roles',
-    component: Rol
+    component: Rol,
+    meta: {
+      administrador: true,
+      jefeadministracion: true,
+      conciliador: true,
+      asistadministracion: true,
+      dataentry: true
+    }
   },
   {
     path: '/usuarios',
     name: 'usuarios',
-    component: Usuario
+    component: Usuario,
+    meta: {
+      administrador: true,
+      jefeadministracion: true,
+      conciliador: true,
+      asistadministracion: true,
+      dataentry: true
+    }
   },   
   {
     path: '/about',
@@ -91,5 +172,35 @@ var router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.libre)) {
+      next();
+  } else if (store.state.usuario && store.state.usuario.rol == 'Administrador') {
+      if (to.matched.some(record => record.meta.administrador)) {
+          next();
+      }
+  } else if (store.state.usuario && store.state.usuario.rol == 'JefeAdministracion') {
+      if (to.matched.some(record => record.meta.jefeadministracion)) {
+          next();
+      }
+  } else if (store.state.usuario && store.state.usuario.rol == 'AsistAdministracion') {
+      if (to.matched.some(record => record.meta.asistadministracion)) {
+          next();
+      }
+  } else if (store.state.usuario && store.state.usuario.rol == 'Conciliador') {
+      if (to.matched.some(record => record.meta.conciliador)) {
+          next();
+      }
+  } else if (store.state.usuario && store.state.usuario.rol == 'Dataentry') {
+      if (to.matched.some(record => record.meta.dataentry)) {
+          next();
+      }
+  } else {
+      next({
+        name: 'login'
+    });
+  }
+});
 
 export default router

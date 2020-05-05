@@ -5,9 +5,10 @@
       :clipped="$vuetify.breakpoint.mdAndUp"
       app
       v-model="drawer"
+      v-if="logueado"
     >
       <v-list dense>
-        <template>
+        <template v-if="esAdministrador || esJefeAdministracion || esAsistAdministracion || esConciliador || esDataentry">
           <v-list-item :to="{name:'home'}">
             <v-list-item-action>
               <v-icon>home</v-icon>
@@ -17,7 +18,7 @@
             </v-list-item-title>
           </v-list-item>
         </template>
-        <template>
+        <template v-if="esAdministrador || esJefeAdministracion || esAsistAdministracion || esConciliador || esDataentry">
           <v-list-group>
             <v-list-item slot="activator">
               <v-list-item-content>
@@ -88,7 +89,7 @@
             </v-list-item>
           </v-list-group>
         </template>
-        <template>
+        <template v-if="esAdministrador || esJefeAdministracion || esAsistAdministracion || esConciliador || esDataentry">
           <v-list-group>
             <v-list-item slot="activator">
               <v-list-item-content>
@@ -119,7 +120,7 @@
             </v-list-item>
           </v-list-group>
         </template>        
-        <template>
+        <template v-if="esAdministrador || esJefeAdministracion || esAsistAdministracion">
           <v-list-group>
             <v-list-item slot="activator">
               <v-list-item-content>
@@ -230,7 +231,7 @@
             </v-list-item>             -->
           </v-list-group>  
         </template>
-        <template>
+        <template v-if="esAdministrador || esJefeAdministracion">
           <v-list-group>
             <v-list-item slot="activator">
               <v-list-item-content>
@@ -328,5 +329,33 @@ export default {
       clipped: false,
       drawer: true,
   }),
+  computed: {
+    logueado(){
+      return this.$store.state.usuario;
+    },
+    esAdministrador(){
+      return this.$store.state.usuario && this.$store.state.usuario.rol =='Administrador';
+    },
+    esJefeAdministracion(){
+      return this.$store.state.usuario && this.$store.state.usuario.rol =='JefeAdministracion';
+    },
+    esAsistAdministracion(){
+      return this.$store.state.usuario && this.$store.state.usuario.rol =='AsistAdministracion';
+    },
+    esConciliador(){
+      return this.$store.state.usuario && this.$store.state.usuario.rol =='Conciliador';
+    },
+    esDataentry(){
+      return this.$store.state.usuario && this.$store.state.usuario.rol =='Dataentry';
+    },
+  },
+  created(){
+    this.$store.dispatch("autoLogin");
+  },
+  methods:{
+    salir(){
+      this.$store.dispatch("salir");
+    }
+  }
 };
 </script>
