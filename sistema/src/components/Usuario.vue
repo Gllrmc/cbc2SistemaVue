@@ -280,36 +280,36 @@
                 console.log(error);
             });
         },
-            select(){
-                let me=this;
-                var rolesArray=[];
-                var personasArray=[];
-                let header={"Authorization" : "Bearer " + this.$store.state.token};
-                let configuracion= {headers : header};
-                axios.get('api/Roles/Select',configuracion).then(function(response){
-                    rolesArray=response.data;
-                    rolesArray.map(function(x){
-                        me.roles.push({text: x.nombre,value:x.id});
-                    });
-                }).catch(function(error){
+        select(){
+            let me=this;
+            var rolesArray=[];
+            var personasArray=[];
+            let header={"Authorization" : "Bearer " + this.$store.state.token};
+            let configuracion= {headers : header};
+            axios.get('api/Roles/Select',configuracion).then(function(response){
+                rolesArray=response.data;
+                rolesArray.map(function(x){
+                    me.roles.push({text: x.nombre,value:x.id});
+                });
+            }).catch(function(error){
+                me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
+                me.snackbar = true;
+                console.log(error);
+            });
+            axios.get('api/Personas/Select',configuracion)
+            .then(function(response){
+                personasArray=response.data;
+                personasArray.map(function(x){
+                    me.personas.push({text: x.nombre,value:x.personaId});
+                });
+            }).catch(function(error){
+                if (!error.response.status==500){
                     me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
                     me.snackbar = true;
                     console.log(error);
-                });
-                axios.get('api/Personas/Select',configuracion)
-                .then(function(response){
-                    personasArray=response.data;
-                    personasArray.map(function(x){
-                        me.personas.push({text: x.nombre,value:x.personaId});
-                    });
-                }).catch(function(error){
-                    if (!error.response.status==500){
-                        me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
-                        me.snackbar = true;
-                        console.log(error);
-                    }
-                });                
-            },
+                }
+            });                
+        },
         editItem (item) {
             this.id=item.id;
             this.rolId=item.rolId;
@@ -328,21 +328,21 @@
             this.dialog = true
         },
         deleteItem (item) {
+            var me=this;
             var resulta = confirm('Esta seguro de querer borrar el registro?');
-            if (result) {
-                let header={"Authorization" : "Bearer " + this.$store.state.token};
+            if (resulta) {
+                let header={"Authorization" : "Bearer " + me.$store.state.token};
                 let configuracion= {headers : header};
                 axios.delete('api/Usuarios/Eliminar/'+item.id,configuracion).then(function(response){
                     me.close();
-                        me.listar();
-                        me.limpiar();
+                    me.listar();
                 }).catch(function(error){
                     me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
                     me.snackbar = true;
                     console.log(error);
                 });
             }
-        },
+        },        
         close () {
             this.dialog = false
             this.limpiar();

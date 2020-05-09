@@ -22,15 +22,15 @@
                     <v-spacer />
                 </v-toolbar>
                 <v-card-text>
-                <v-form>
-                    <v-text-field v-model="email" color="accent" label="Email" prepend-icon="person" required>
-                    </v-text-field>
-                    <v-text-field v-model="password" type="password" color="accent" label="Password" prepend-icon="lock" required>
-                    </v-text-field>
-                </v-form>
-                <v-row class="red--text" v-if="error">
-                    {{error}}
-                </v-row>
+                    <v-form>
+                        <v-text-field v-model="email" color="accent" label="Email" prepend-icon="person" required>
+                        </v-text-field>
+                        <v-text-field v-model="password" type="password" color="accent" label="Password" prepend-icon="lock" required>
+                        </v-text-field>
+                    </v-form>
+                    <v-row class="red--text" v-if="error">
+                        {{error}}
+                    </v-row>
                 </v-card-text>
                 <v-card-actions class="px-3 pb-3">
                 <v-spacer />
@@ -68,7 +68,7 @@ export default {
             .catch(err => {
                 console.log(err.response);
                 if (err.response.status==400){
-                    this.error="No es un email válido";
+                    this.error="No es un email válido o rol restringido para acceso";
                 } else if (err.response.status==404){
                     this.error="No existe el usuario o sus datos son incorrectos";
                 }else{

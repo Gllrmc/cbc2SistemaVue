@@ -12,6 +12,7 @@ import Provincia from '../components/Provincia.vue'
 import Empresa from '../components/Empresa.vue'
 import Rol from '../components/Rol.vue'
 import Usuario from '../components/Usuario.vue'
+import Appconfig from '../components/Appconfig.vue'
 import store from '../store'
 
 Vue.use(VueRouter)
@@ -149,6 +150,18 @@ Vue.use(VueRouter)
     path: '/usuarios',
     name: 'usuarios',
     component: Usuario,
+    meta: {
+      administrador: true,
+      jefeadministracion: true,
+      conciliador: true,
+      asistadministracion: true,
+      dataentry: true
+    }
+  },   
+  {
+    path: '/appconfigs',
+    name: 'appconfigs',
+    component: Appconfig,
     meta: {
       administrador: true,
       jefeadministracion: true,

@@ -282,21 +282,21 @@
             this.dialog = true
         },
         deleteItem (item) {
+            var me=this;
             var resulta = confirm('Esta seguro de querer borrar el registro?');
-            if (result) {
-                let header={"Authorization" : "Bearer " + this.$store.state.token};
+            if (resulta) {
+                let header={"Authorization" : "Bearer " + me.$store.state.token};
                 let configuracion= {headers : header};
                 axios.delete('api/Provincias/Eliminar/'+item.id,configuracion).then(function(response){
                     me.close();
-                        me.listar();
-                        me.limpiar();
+                    me.listar();
                 }).catch(function(error){
                     me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
                     me.snackbar = true;
                     console.log(error);
                 });
             }
-        },
+        },        
         close () {
             this.dialog = false
             this.limpiar();

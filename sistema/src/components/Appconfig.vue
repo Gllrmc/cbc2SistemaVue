@@ -3,7 +3,7 @@
         <v-col>
             <v-data-table
             :headers="headers"
-            :items="concontas"
+            :items="appconfigs"
             :search="search"
             class="elevation-1"
             no-data-text="Nada para mostrar"
@@ -13,7 +13,7 @@
                     <div class="ma-2">
                         <v-btn small @click="crearPDF()"><v-icon>print</v-icon></v-btn>
                     </div>
-                    <v-toolbar-title>Conceptos Contables</v-toolbar-title>
+                    <v-toolbar-title>Configuracion y parametros</v-toolbar-title>
                     <v-snackbar
                         v-model="snackbar"
                         :timeout="timeout"
@@ -50,32 +50,20 @@
                         <v-card-text>
                             <v-container grid-list-md>
                                 <v-row dense>
-                                    <v-col cols="12" sm="4" md="4">
-                                        <v-autocomplete 
-                                            v-model="empresaId"
-                                            clearable
-                                            :items = "empresas"
-                                            :search-input.sync="searchem"
-                                            @change="selectGrpconceptos()"                                   
-                                            label="Empresa">
-                                        </v-autocomplete>
+                                    <v-col cols="12" sm="12" md="12">
+                                        <v-text-field v-model="parametro" label="Parametro"></v-text-field>
                                     </v-col>
-                                    <v-col cols="12" sm="8" md="8">
-                                        <v-autocomplete 
-                                            v-model="grpconceptoId"
-                                            clearable
-                                            :items = "grpconceptos"
-                                            :search-input.sync="searchco"                                   
-                                            label="Grupo de Conceptos">
-                                        </v-autocomplete>
+                                    <v-col cols="12" sm="12" md="12">
+                                        <v-text-field v-model="vstring" label="Valor String"></v-text-field>
                                     </v-col>
-                                    <v-col cols="12" sm="4" md="4">
-                                        <v-text-field v-model="orden" label="Código">
-                                        </v-text-field>
+                                    <v-col cols="12" sm="12" md="12">
+                                        <v-text-field v-model="vint" label="Valor Int"></v-text-field>
                                     </v-col>
-                                    <v-col cols="12" sm="8" md="8">
-                                        <v-text-field v-model="nombre" label="Nombre del Concepto">
-                                        </v-text-field>
+                                    <v-col cols="12" sm="12" md="12">
+                                        <v-text-field v-model="vdecimal" label="Valor Decimal"></v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" sm="12" md="12">
+                                        <v-text-field v-model="vdatetime" label="Valor DateTime"></v-text-field>
                                     </v-col>
                                     <v-col cols="12" sm="12" md="12" v-show="valida">
                                         <div class="red--text" v-for="v in validaMensaje" :key="v" v-text="v">
@@ -91,15 +79,15 @@
                         </v-card-actions>
                         </v-card>
                     </v-dialog>
-                    <v-dialog v-model="adModal" max-width="390">
+                    <v-dialog v-model="adModal" max-width="290">
                         <v-card>
-                            <v-card-title class="headline" v-if="adAccion==1">¿Activar Concepto Contable?</v-card-title>
-                            <v-card-title class="headline" v-if="adAccion==2">Bloquear Concepto Contable?</v-card-title>
+                            <v-card-title class="headline" v-if="adAccion==1">¿Activar Parametro?</v-card-title>
+                            <v-card-title class="headline" v-if="adAccion==2">Bloquear Parametro?</v-card-title>
                             <v-card-text>
                                 Estás a punto de 
                                 <span v-if="adAccion==1">Activar </span>
                                 <span v-if="adAccion==2">Bloquear </span>
-                                el Concepto Contable: {{ adNombre }}
+                                el Parametro {{ adNombre }}
                             </v-card-text>
                             <v-card-actions>
                                 <v-spacer/>
@@ -181,38 +169,34 @@
         snackbar:false,
         snacktext: '',
         timeout: 4000,
-        concontas: [],
-        empresas: [],
-        grpconceptos: [],
+        appconfigs: [],
         dialog: false,
         headers: [
             { text: '[Opciones]', value: 'actions', align: 'center', sortable: false },
-            { text: 'Empresa', value: 'empresa', align: 'start', sortable: true },
-            { text: 'Grupo de Concepto', value: 'grpconcepto', align: 'start', sortable: true },
-            { text: 'Código', value: 'orden', align: 'start', sortable: true },
-            { text: 'Nombre del Concepto', value: 'nombre', align: 'start', sortable: true },
+            { text: 'Parametro', value: 'parametro', align: 'start', sortable: true },
+            { text: 'String', value: 'vstring', align: 'start', sortable: true },
+            { text: 'Int', value: 'vint', align: 'start', sortable: true },
+            { text: 'Decimal', value: 'vdecimal', align: 'start', sortable: true },
+            { text: 'DateTime', value: 'vdatetime', align: 'start', sortable: true },
             { text: 'Estado', value: 'activo', align: 'center', sortable: true  },
             { text: 'Creador Id', value: 'iduseralta', align: 'center', sortable: true },
             { text: 'Fecha Hora Creación', value: 'fecalta', align: 'start', sortable: true },
             { text: 'Mod. Id', value: 'iduserumod', align: 'center', sortable: true },
-            { text: 'Fecha Hora Ult.Mod.', value: 'fecumod', align: 'start', sortable: true }                  
+            { text: 'Fecha Hora Ult.Mod.', value: 'fecumod', align: 'start', sortable: true }
         ],
         search:'',
-        searchem: '',
-        searchco: '',
         editedIndex: -1,
-        id: '',
-        empresaId: '',
-        empresa: '',
-        orden: '',
-        nombre: '',
-        grpconceptoId: '',
-        grpconcepto: '',
+        id:'',
+        parametro:'',
+        vstring:'',
+        vint:'',
+        vdecimal:'',
+        vdatetime:'',
         iduseralta:'',
         fecalta:'',
         iduserumod:'',
         fecumod:'',
-        activo:false,
+        activo:false,                 
         valida: 0,
         validaMensaje:[],
         adModal: 0,
@@ -223,34 +207,35 @@
 
     computed: {
       formTitle () {
-        return this.editedIndex === -1 ? 'Nueva Concepto Contable' : 'Actualizar Concepto Contable'
+        return this.editedIndex === -1 ? 'Nuevo parámetro' : 'Actualizar parámetro'
       },
     },
 
     watch: {
-        dialog (val) {
-            val || this.close()
-        },
+      dialog (val) {
+        val || this.close()
+      },
     },
 
     created () {
-        this.select();
-        this.listar()
+      this.listar()
     },
 
     methods: {
         crearPDF(){
             var columns = [
-                    {title: "Empresa", dataKey: "empresa"},
-                    {title: "Grupo", dataKey: "grpconcepto"},
-                    {title: "Orden", dataKey: "orden"},
-                    {title: "Concepto", dataKey: "nombre"},
-                    {title: "Activo", dataKey: "activo"}
+                {title: "Parametro", dataKey: "parametro"},
+                {title: "String", dataKey: "vstring"},
+                {title: "Int", dataKey: "vint"},
+                {title: "Decimal", dataKey: "vdecimal"},
+                {title: "DateTime", dataKey: "vdatetime"},
+                {title: "Activo", dataKey: "activo"}
             ];
             var rows = [];
 
-            this.concontas.map(function(x){
-                    rows.push({nombre:x.nombre,empresaId:x.empresaId,empresa:x.empresa,orden:x.orden,grpconcepto:x.grpconcepto,activo:x.activo});
+            this.appconfigs.map(function(x){
+                rows.push({parametro:x.parametro,vstring:x.vstring,vint:x.int,
+                    vdecimal:x.vdecimal,vdatetime:x.vdatetime,activo:x.activo});
             });
 
             // Only pt supported (not mm or in)
@@ -258,67 +243,33 @@
             doc.autoTable(columns, rows, {
                 margin: {top: 60},
                 addPageContent: function(data) {
-                    doc.text("Listado de Conceptos Contables", 40, 30);
+                    doc.text("Listado de Parametros", 40, 30);
                 }
             });
-            doc.save('Concconta.pdf');
+            doc.save('Parametros.pdf');
         },
         listar(){
             let me=this;
             let header={"Authorization" : "Bearer " + this.$store.state.token};
             let configuracion= {headers : header};
             // console.log(configuracion);
-            axios.get('api/Concontas/Listar',configuracion).then(function(response){
+            axios.get('api/Appconfigs/Listar',configuracion).then(function(response){
                 // console.log(response);
-                me.concontas=response.data;
+                me.appconfigs=response.data;
             }).catch(function(error){
                 me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
                 me.snackbar = true;
                 console.log(error);
             });
         },
-        select(){
-            let me=this;
-            var empresasArray=[];
-            let header={"Authorization" : "Bearer " + this.$store.state.token};
-            let configuracion= {headers : header};
-            axios.get('api/Empresas/Select',configuracion).then(function(response){
-                // console.log(response);
-                empresasArray=response.data;
-                empresasArray.map(function(x){
-                    me.empresas.push({text: x.nombre,value:x.id});
-                });
-            }).catch(function(error){
-                me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
-                me.snackbar = true;
-                console.log(error);
-            });
-        },
-        selectGrpconceptos(){
-            let me=this;
-            var grpconceptosArray=[];
-            let header={"Authorization" : "Bearer " + this.$store.state.token};
-            let configuracion= {headers : header};
-            axios.get('api/Grpconceptos/SelectGrpconceptoDeEmpresa/'+me.empresaId,configuracion).then(function(response){
-                // console.log(response);
-                grpconceptosArray=response.data;
-                grpconceptosArray.map(function(x){
-                    me.grpconceptos.push({text: x.nombre,value:x.id});
-                });
-            }).catch(function(error){
-                me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
-                me.snackbar = true;
-                console.log(error);
-            });
-        },                        
+
         editItem (item) {
             this.id=item.id;
-            this.empresaId=item.empresaId;
-            this.selectGrpconceptos();
-            this.orden=item.orden;
-            this.nombre=item.nombre;
-            this.grpconceptoId=item.grpconceptoId;
-            this.grpconcepto=item.grpconcepto;
+            this.parametro=item.parametro;
+            this.vstring=item.vstring;
+            this.vint=item.vint;
+            this.vdecimal=item.vdecimal;
+            this.vdatetime=item.vdatetime;
             this.iduseralta=item.iduseralta;
             this.fecalta=item.fecalta;
             this.iduserumod=item.iduserumod;
@@ -333,7 +284,7 @@
             if (resulta) {
                 let header={"Authorization" : "Bearer " + me.$store.state.token};
                 let configuracion= {headers : header};
-                axios.delete('api/Concontas/Eliminar/'+item.id,configuracion).then(function(response){
+                axios.delete('api/Appconfigs/Eliminar/'+item.id,configuracion).then(function(response){
                     me.close();
                     me.listar();
                 }).catch(function(error){
@@ -350,39 +301,38 @@
         },
         limpiar(){
             this.id="";
-            this.empresaId="";
-            this.orden="";
-            this.nombre="";
-            this.grpconceptoId="";
-            this.grpconcepto="";
-            this.iduseralta = "";
+            this.parametro="";
+            this.vstring="";
+            this.vint="";
+            this.vdecimal="";
+            this.vdatetime="";
             this.fecalta = "";
             this.iduserumod = "";
             this.fecumod = "";
-            this.activo = false;
+            this.activo = false;                  
             this.editedIndex=-1;
         },
         guardar () {
-            if (this.validar()){
+            let me=this;
+            if (me.validar()){
                 return;
             }
             var date = new Date();                
-            let header={"Authorization" : "Bearer " + this.$store.state.token};
+            let header={"Authorization" : "Bearer " + me.$store.state.token};
             let configuracion= {headers : header};
-            if (this.editedIndex > -1) {
+            if (me.editedIndex > -1) {
                 //Código para editar
                 //Código para guardar
-                let me=this;
-                axios.put('api/Concontas/Actualizar',{
-                    'Id':me.id,
-                    'empresaId': me.empresaId,
-                    'orden': me.orden,
-                    'nombre': me.nombre,
-                    'grpconceptoId': me.grpconceptoId,
+                axios.put('api/Appconfigs/Actualizar',{
+                    'id':me.id,
+                    'parametro':me.parametro,
+                    'vstring': me.vstring,
+                    'vint': me.vint,
+                    'vdecimal': me.vdecimal,
+                    'vdatetime': me.vdatetime,
                     'iduseralta': me.iduseralta,
                     'fecalta': me.fecalta,
-                    'iduserumod': me.$store.state.usuario.idusuario,
-                    'fecumod': new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString()                        
+                    'iduserumod': me.$store.state.usuario.idusuario
                 },configuracion).then(function(response){
                     me.close();
                     me.listar();
@@ -394,12 +344,12 @@
                 });
             } else {
                 //Código para guardar
-                let me=this;
-                axios.post('api/Concontas/Crear',{
-                    'empresaId': me.empresaId,
-                    'orden': me.orden,
-                    'nombre': me.nombre,
-                    'grpconceptoId': me.grpconceptoId,
+                axios.post('api/Appconfigs/Crear',{
+                    'parametro':me.parametro,
+                    'vstring': me.vstring,
+                    'vint': me.vint,
+                    'vdecimal': me.vdecimal,
+                    'vdatetime': me.vdatetime,
                     'iduseralta': me.$store.state.usuario.idusuario                           
                 },configuracion).then(function(response){
                     me.close();
@@ -415,22 +365,12 @@
         validar(){
             this.valida=0;
             this.validaMensaje=[];
-
-            if (this.nombre.length<3 || this.nombre.length>50){
-                this.validaMensaje.push("El Nombre debe tener más de 3 caracteres y menos de 50 caracteres.");
+            if (!this.parametro){
+                this.validaMensaje.push("Ingrese un parametro");
             }
-            if (!this.empresaId){
-                this.validaMensaje.push("Seleccione una Empresa.");
+            if (!this.vstring && !this.vint && !this.vdecimal && !this.vdatetime){
+                this.validaMensaje.push("El formulario debe contener al menos unvalor para un tipo de dato");
             }
-            if (!this.orden){
-                this.validaMensaje.push("Indique un código.");
-            }
-            if (this.orden.length>3){
-                this.validaMensaje.push("El código debe tener 3 o menos caracteres.");
-            }
-            if (!this.grpconceptoId){
-                this.validaMensaje.push("Seleccione un Grupo de Conceptos.");
-            }                            
             if (this.validaMensaje.length){
                 this.valida=1;
             }
@@ -457,7 +397,7 @@
             let me=this;
             let header={"Authorization" : "Bearer " + this.$store.state.token};
             let configuracion= {headers : header};
-            axios.put('api/Concontas/Activar/'+this.adId,{},configuracion).then(function(response){
+            axios.put('api/Appconfigs/Activar/'+this.adId,{},configuracion).then(function(response){
                 me.adModal=0;
                 me.adAccion=0;
                 me.adNombre="";
@@ -473,7 +413,7 @@
             let me=this;
             let header={"Authorization" : "Bearer " + this.$store.state.token};
             let configuracion= {headers : header};
-            axios.put('api/Concontas/Desactivar/'+this.adId,{},configuracion).then(function(response){
+            axios.put('api/Appconfigs/Desactivar/'+this.adId,{},configuracion).then(function(response){
                 me.adModal=0;
                 me.adAccion=0;
                 me.adNombre="";

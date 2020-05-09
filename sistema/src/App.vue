@@ -219,7 +219,7 @@
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
-            <!-- <v-list-item :to="{ name: 'parametros'}">
+            <v-list-item :to="{ name: 'appconfigs'}">
               <v-list-item-action>
                 <v-icon>table_chart</v-icon>
               </v-list-item-action>
@@ -228,7 +228,7 @@
                   Parametros
                 </v-list-item-title>
               </v-list-item-content>
-            </v-list-item>             -->
+            </v-list-item>            
           </v-list-group>  
         </template>
         <template v-if="esAdministrador || esJefeAdministracion">
@@ -279,10 +279,10 @@
         <span class="hidden-sm-and-down">CB2 - Conciliación Bancaria Cuadrada</span>
       </v-toolbar-title>
       <v-spacer />
-      <!-- <v-btn @click="salir" v-if="logueado" icon>
+      <v-btn @click="salir" v-if="logueado">
         <v-icon>logout</v-icon> Salir
-      </v-btn> -->
-      <v-btn :to="{name: 'login'}">
+      </v-btn>
+      <v-btn v-else :to="{name: 'login'}">
         <v-icon>apps</v-icon> Login
       </v-btn>      
     </v-app-bar>
