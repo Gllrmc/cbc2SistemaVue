@@ -168,7 +168,17 @@
                   Conceptos Contables
                 </v-list-item-title>
               </v-list-item-content>
-            </v-list-item>               
+            </v-list-item>
+            <v-list-item :to="{ name: 'bancuentas'}">
+              <v-list-item-action>
+                <v-icon>table_chart</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>
+                  Cuentas de Banco
+                </v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
             <v-list-item :to="{ name: 'empresas'}">
               <v-list-item-action>
                 <v-icon>table_chart</v-icon>
@@ -226,6 +236,16 @@
               <v-list-item-content>
                 <v-list-item-title>
                   Parametros
+                </v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>            
+            <v-list-item :to="{ name: 'pruebas'}">
+              <v-list-item-action>
+                <v-icon>table_chart</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>
+                  Prueba
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>            

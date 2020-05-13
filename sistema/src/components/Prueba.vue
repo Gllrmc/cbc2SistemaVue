@@ -3,7 +3,7 @@
         <v-col>
             <v-data-table
             :headers="headers"
-            :items="provincias"
+            :items="appconfigs"
             :search="search"
             class="elevation-1"
             no-data-text="Nada para mostrar"
@@ -13,7 +13,7 @@
                     <div class="ma-2">
                         <v-btn small @click="crearPDF()"><v-icon>print</v-icon></v-btn>
                     </div>
-                    <v-toolbar-title>Provincias</v-toolbar-title>
+                    <v-toolbar-title>Prueba</v-toolbar-title>
                     <v-snackbar
                         v-model="snackbar"
                         :timeout="timeout"
@@ -46,17 +46,24 @@
                         <v-card>
                         <v-card-title>
                             <span class="headline">{{ formTitle }}</span>
-                        </v-card-title>
+                        </v-card-title> 
                         <v-card-text>
                             <v-container grid-list-md>
                                 <v-row dense>
                                     <v-col cols="12" sm="12" md="12">
-                                        <v-select v-model="paisId"
-                                        :items = "paises" label = "País">
-                                        </v-select>
-                                    </v-col>                                
+                                        <v-text-field v-model="parametro" label="Parametro"></v-text-field>
+                                    </v-col>
                                     <v-col cols="12" sm="12" md="12">
-                                        <v-text-field v-model="nombre" label="Provincia"></v-text-field>
+                                        <v-text-field v-model="vstring" label="Valor String"></v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" sm="12" md="12">
+                                        <v-text-field v-model="vint" label="Valor Int"></v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" sm="12" md="12">
+                                        <v-text-field v-model="vdecimal" label="Valor Decimal"></v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" sm="12" md="12">
+                                        <v-text-field v-model="vdatetime" label="Valor DateTime"></v-text-field>
                                     </v-col>
                                     <v-col cols="12" sm="12" md="12" v-show="valida">
                                         <div class="red--text" v-for="v in validaMensaje" :key="v" v-text="v">
@@ -72,15 +79,15 @@
                         </v-card-actions>
                         </v-card>
                     </v-dialog>
-                    <v-dialog v-model="adModal" max-width="390">
+                    <v-dialog v-model="adModal" max-width="290">
                         <v-card>
-                            <v-card-title class="headline" v-if="adAccion==1">¿Activar Provincia?</v-card-title>
-                            <v-card-title class="headline" v-if="adAccion==2">Bloquear Provincia?</v-card-title>
+                            <v-card-title class="headline" v-if="adAccion==1">¿Activar Parametro?</v-card-title>
+                            <v-card-title class="headline" v-if="adAccion==2">Bloquear Parametro?</v-card-title>
                             <v-card-text>
                                 Estás a punto de 
                                 <span v-if="adAccion==1">Activar </span>
                                 <span v-if="adAccion==2">Bloquear </span>
-                                la Provincia: {{ adNombre }}
+                                el Parametro {{ adNombre }}
                             </v-card-text>
                             <v-card-actions>
                                 <v-spacer/>
@@ -162,34 +169,34 @@
         snackbar:false,
         snacktext: '',
         timeout: 4000,
-        provincias:[],
-        paises: [],
-        provincias: [],               
-        provinciasf: [],
+        appconfigs: [],
         dialog: false,
         headers: [
             { text: '[Opciones]', value: 'actions', align: 'center', sortable: false },
-            { text: 'Opciones', value: 'opciones', align: 'start', sortable: false },
-            { text: 'Pais', value: 'pais', align: 'start', sortable: true },
-            { text: 'Provincia', value: 'nombre', align: 'start', sortable: true},
+            { text: 'Parametro', value: 'parametro', align: 'start', sortable: true },
+            { text: 'String', value: 'vstring', align: 'start', sortable: true },
+            { text: 'Int', value: 'vint', align: 'start', sortable: true },
+            { text: 'Decimal', value: 'vdecimal', align: 'start', sortable: true },
+            { text: 'DateTime', value: 'vdatetime', align: 'start', sortable: true },
             { text: 'Estado', value: 'activo', align: 'center', sortable: true  },
             { text: 'Creador Id', value: 'iduseralta', align: 'center', sortable: true },
             { text: 'Fecha Hora Creación', value: 'fecalta', align: 'start', sortable: true },
             { text: 'Mod. Id', value: 'iduserumod', align: 'center', sortable: true },
-            { text: 'Fecha Hora Ult.Mod.', value: 'fecumod', align: 'start', sortable: true }                   
+            { text: 'Fecha Hora Ult.Mod.', value: 'fecumod', align: 'start', sortable: true }
         ],
-        search: '',
-        searchpa: '',
-        searchpr: '',
+        search:'',
         editedIndex: -1,
         id:'',
-        nombre:'',
-        paisId:'',
+        parametro:'',
+        vstring:'',
+        vint:'',
+        vdecimal:'',
+        vdatetime:'',
         iduseralta:'',
         fecalta:'',
         iduserumod:'',
         fecumod:'',
-        activo:false,
+        activo:false,                 
         valida: 0,
         validaMensaje:[],
         adModal: 0,
@@ -200,32 +207,35 @@
 
     computed: {
       formTitle () {
-        return this.editedIndex === -1 ? 'Nueva provincia' : 'Actualizar provincia'
+        return this.editedIndex === -1 ? 'Nuevo parámetro' : 'Actualizar parámetro'
       },
     },
 
     watch: {
-        dialog (val) {
-            val || this.close()
-        },
+      dialog (val) {
+        val || this.close()
+      },
     },
 
     created () {
-        this.select();
-        this.listar()
+      this.listar()
     },
 
     methods: {
         crearPDF(){
             var columns = [
-                    {title: "Id", dataKey: "id"},
-                    {title: "Provincia", dataKey: "nombre"},
-                    {title: "Estado", dataKey: "activo"},
+                {title: "Parametro", dataKey: "parametro"},
+                {title: "String", dataKey: "vstring"},
+                {title: "Int", dataKey: "vint"},
+                {title: "Decimal", dataKey: "vdecimal"},
+                {title: "DateTime", dataKey: "vdatetime"},
+                {title: "Activo", dataKey: "activo"}
             ];
             var rows = [];
 
-            this.provincias.map(function(x){
-                    rows.push({id:x.id,nombre:x.nombre,activo:x.activo ? "Activo" : "Inactivo"});
+            this.appconfigs.map(function(x){
+                rows.push({parametro:x.parametro,vstring:x.vstring,vint:x.int,
+                    vdecimal:x.vdecimal,vdatetime:x.vdatetime,activo:x.activo});
             });
 
             // Only pt supported (not mm or in)
@@ -233,50 +243,38 @@
             doc.autoTable(columns, rows, {
                 margin: {top: 60},
                 addPageContent: function(data) {
-                    doc.text("Listado de Provincias", 40, 30);
+                    doc.text("Listado de Parametros", 40, 30);
                 }
             });
-            doc.save('Provincias.pdf');
+            doc.save('Parametros.pdf');
         },
         listar(){
             let me=this;
             let header={"Authorization" : "Bearer " + this.$store.state.token};
             let configuracion= {headers : header};
-            axios.get('api/Provincias/Listar',configuracion).then(function(response){
-                //console.log(response);
-                me.provincias=response.data;
+            // console.log(configuracion);
+            axios.get('api/Appconfigs/Listar',configuracion).then(function(response){
+                // console.log(response);
+                me.appconfigs=response.data;
             }).catch(function(error){
                 me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
                 me.snackbar = true;
                 console.log(error);
             });
         },
-        select(){
-            let me=this;
-            var paisesArray=[];
-            let header={"Authorization" : "Bearer " + this.$store.state.token};
-            let configuracion= {headers : header};
-            axios.get('api/Paises/Select',configuracion).then(function(response){
-                // console.log(response);
-                paisesArray=response.data;
-                paisesArray.map(function(x){
-                    me.paises.push({text: x.nombre,value:x.id});
-                });
-            }).catch(function(error){
-                me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
-                me.snackbar = true;
-                console.log(error);
-            });
-        },            
+
         editItem (item) {
             this.id=item.id;
-            this.nombre=item.nombre;
-            this.paisId=item.paisId;
+            this.parametro=item.parametro;
+            this.vstring=item.vstring;
+            this.vint=item.vint;
+            this.vdecimal=item.vdecimal;
+            this.vdatetime=item.vdatetime;
             this.iduseralta=item.iduseralta;
             this.fecalta=item.fecalta;
             this.iduserumod=item.iduserumod;
             this.fecumod=item.fecumod;
-            this.activo=item.activo;                   
+            this.activo=item.activo;                
             this.editedIndex=1;
             this.dialog = true
         },
@@ -286,7 +284,7 @@
             if (resulta) {
                 let header={"Authorization" : "Bearer " + me.$store.state.token};
                 let configuracion= {headers : header};
-                axios.delete('api/Provincias/Eliminar/'+item.id,configuracion).then(function(response){
+                axios.delete('api/Appconfigs/Eliminar/'+item.id,configuracion).then(function(response){
                     me.close();
                     me.listar();
                 }).catch(function(error){
@@ -295,7 +293,7 @@
                     console.log(error);
                 });
             }
-        },        
+        },
         close () {
             this.dialog = false
             this.limpiar();
@@ -303,9 +301,11 @@
         },
         limpiar(){
             this.id="";
-            this.nombre="";
-            this.paisId="";
-            this.iduseralta = "";
+            this.parametro="";
+            this.vstring="";
+            this.vint="";
+            this.vdecimal="";
+            this.vdatetime="";
             this.fecalta = "";
             this.iduserumod = "";
             this.fecumod = "";
@@ -313,24 +313,26 @@
             this.editedIndex=-1;
         },
         guardar () {
-            if (this.validar()){
+            let me=this;
+            if (me.validar()){
                 return;
             }
             var date = new Date();                
-            let header={"Authorization" : "Bearer " + this.$store.state.token};
+            let header={"Authorization" : "Bearer " + me.$store.state.token};
             let configuracion= {headers : header};
-            if (this.editedIndex > -1) {
+            if (me.editedIndex > -1) {
                 //Código para editar
                 //Código para guardar
-                let me=this;
-                axios.put('api/Provincias/Actualizar',{
-                    'Id':me.id,
-                    'nombre': me.nombre,
-                    'paisId': me.paisId,
+                axios.put('api/Appconfigs/Actualizar',{
+                    'id':me.id,
+                    'parametro':me.parametro,
+                    'vstring': me.vstring,
+                    'vint': me.vint,
+                    'vdecimal': me.vdecimal,
+                    'vdatetime': me.vdatetime,
                     'iduseralta': me.iduseralta,
                     'fecalta': me.fecalta,
-                    'iduserumod': me.$store.state.usuario.idusuario,
-                    'fecumod': new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString()
+                    'iduserumod': me.$store.state.usuario.idusuario
                 },configuracion).then(function(response){
                     me.close();
                     me.listar();
@@ -342,11 +344,13 @@
                 });
             } else {
                 //Código para guardar
-                let me=this;
-                axios.post('api/Provincias/Crear',{
-                    'nombre': me.nombre,
-                    'paisId': me.paisId,
-                    'iduseralta': me.$store.state.usuario.idusuario                         
+                axios.post('api/Appconfigs/Crear',{
+                    'parametro':me.parametro,
+                    'vstring': me.vstring,
+                    'vint': me.vint,
+                    'vdecimal': me.vdecimal,
+                    'vdatetime': me.vdatetime,
+                    'iduseralta': me.$store.state.usuario.idusuario                           
                 },configuracion).then(function(response){
                     me.close();
                     me.listar();
@@ -361,12 +365,12 @@
         validar(){
             this.valida=0;
             this.validaMensaje=[];
-            if (this.nombre.length<3 || this.nombre.length>50){
-                this.validaMensaje.push("El nombre de la provincia no debe tener menos de 3 caracteres y mas de 50 caracteres.");
+            if (!this.parametro){
+                this.validaMensaje.push("Ingrese un parametro");
             }
-            if (!this.paisId){
-                this.validaMensaje.push("Seleccione un país.");
-            }                
+            if (!this.vstring && !this.vint && !this.vdecimal && !this.vdatetime){
+                this.validaMensaje.push("El formulario debe contener al menos unvalor para un tipo de dato");
+            }
             if (this.validaMensaje.length){
                 this.valida=1;
             }
@@ -393,7 +397,7 @@
             let me=this;
             let header={"Authorization" : "Bearer " + this.$store.state.token};
             let configuracion= {headers : header};
-            axios.put('api/Provincias/Activar/'+this.adId,{},configuracion).then(function(response){
+            axios.put('api/Appconfigs/Activar/'+this.adId,{},configuracion).then(function(response){
                 me.adModal=0;
                 me.adAccion=0;
                 me.adNombre="";
@@ -409,7 +413,7 @@
             let me=this;
             let header={"Authorization" : "Bearer " + this.$store.state.token};
             let configuracion= {headers : header};
-            axios.put('api/Provincias/Desactivar/'+this.adId,{},configuracion).then(function(response){
+            axios.put('api/Appconfigs/Desactivar/'+this.adId,{},configuracion).then(function(response){
                 me.adModal=0;
                 me.adAccion=0;
                 me.adNombre="";

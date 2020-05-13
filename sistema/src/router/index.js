@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from '../components/Login.vue'
 import Banco from '../components/Banco.vue'
+import Bancuenta from '../components/Bancuenta.vue'
 import Conbanco from '../components/Conbanco.vue'
 import Conconta from '../components/Conconta.vue'
 import Grpconcepto from '../components/Grpconcepto.vue'
@@ -13,6 +14,7 @@ import Empresa from '../components/Empresa.vue'
 import Rol from '../components/Rol.vue'
 import Usuario from '../components/Usuario.vue'
 import Appconfig from '../components/Appconfig.vue'
+import Prueba from '../components/Prueba.vue'
 import store from '../store'
 
 Vue.use(VueRouter)
@@ -42,6 +44,18 @@ Vue.use(VueRouter)
     path: '/bancos',
     name: 'bancos',
     component: Banco,
+    meta: {
+      administrador: true,
+      jefeadministracion: true,
+      conciliador: true,
+      asistadministracion: true,
+      dataentry: true
+    }
+  },
+  {
+    path: '/bancuentas',
+    name: 'bancuentas',
+    component: Bancuenta,
     meta: {
       administrador: true,
       jefeadministracion: true,
@@ -157,11 +171,23 @@ Vue.use(VueRouter)
       asistadministracion: true,
       dataentry: true
     }
-  },   
+  },
   {
     path: '/appconfigs',
     name: 'appconfigs',
     component: Appconfig,
+    meta: {
+      administrador: true,
+      jefeadministracion: true,
+      conciliador: true,
+      asistadministracion: true,
+      dataentry: true
+    }
+  },   
+  {
+    path: '/pruebas',
+    name: 'pruebas',
+    component: Prueba,
     meta: {
       administrador: true,
       jefeadministracion: true,
