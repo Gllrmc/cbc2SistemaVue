@@ -3,7 +3,7 @@
         <v-col>
             <v-data-table
             :headers="headers"
-            :items="bancos"
+            :items="asocuentas"
             :search="search"
             class="elevation-1"
             no-data-text="Nada para mostrar"
@@ -13,7 +13,7 @@
                     <div class="ma-2">
                         <v-btn small @click="crearPDF()"><v-icon>print</v-icon></v-btn>
                     </div>
-                    <v-toolbar-title>Bancos</v-toolbar-title>
+                    <v-toolbar-title>Asociación Cuentas</v-toolbar-title>
                     <v-snackbar
                         v-model="snackbar"
                         :timeout="timeout"
@@ -50,14 +50,19 @@
                         <v-card-text>
                             <v-container grid-list-md>
                                 <v-row dense>
-                                    <v-col cols="12" sm="8" md="8">
-                                    <v-text-field v-model="nombre" label="Banco"></v-text-field>
+                                    <v-col cols="12" sm="9" md="9">
+                                        <v-select v-model="empresaId" 
+                                        :items = "empresas" label = "Empresa">
+                                        </v-select>
                                     </v-col>
-                                    <v-col cols="12" sm="2" md="2">
-                                    <v-text-field v-model="nombrecorto" label="Siglas"></v-text-field>
+                                    <v-col cols="12" sm="3" md="3">
+                                        <v-text-field v-model="orden" label="Orden"></v-text-field>
                                     </v-col>
-                                    <v-col cols="12" sm="2" md="2">
-                                    <v-text-field v-model="codigoBCRA" label="Código BCRA"></v-text-field>
+                                    <v-col cols="12" sm="6" md="6">
+                                        <v-select v-model="bancuentaId" :items = "bancuentas" label="Cuenta Banco"></v-select>
+                                    </v-col>
+                                    <v-col cols="12" sm="6" md="6">
+                                        <v-select v-model="concuentaId" :items = "concuentas" label="Cuenta Contable"></v-select>
                                     </v-col>
                                     <v-col cols="12" sm="12" md="12" v-show="valida">
                                         <div class="red--text" v-for="v in validaMensaje" :key="v" v-text="v">
@@ -163,13 +168,17 @@
         snackbar:false,
         snacktext: '',
         timeout: 4000,
-        bancos: [],
+        asocuentas: [],
+        empresas: [],
+        bancuentas: [],
+        concuentas: [],
         dialog: false,
         headers: [
             { text: '[Opciones]', value: 'actions', align: 'start', sortable: false },
-            { text: 'Denominacion', value: 'nombre', align: 'start', sortable: true },
-            { text: 'Siglas', value: 'nombrecorto', align: 'center', sortable: true },
-            { text: 'Codigo BCRA', value: 'codigoBCRA', align: 'center', sortable: true },
+            { text: 'Orden', value: 'apporigen', align: 'start', sortable: true },
+            { text: 'Empresa', value: 'empresa', align: 'start', sortable: true },
+            { text: 'Cuenta de Banco', value: 'bancuenta', align: 'start', sortable: true },
+            { text: 'Cuenta Contable', value: 'concuenta', align: 'start', sortable: true },
             { text: 'Estado', value: 'activo', align: 'center', sortable: true  },
             { text: 'Creador Id', value: 'iduseralta', sortable: true },
             { text: 'Fecha Hora Creación', value: 'fecalta', sortable: true },
@@ -179,9 +188,10 @@
         search:'',
         editedIndex: -1,
         id: '',
-        nombre: '',
-        nombrecorto: '',
-        codigoBCRA: '',
+        empresaId: '',
+        orden: '',
+        bancuentaId: '',
+        concuentaId: '',
         iduseralta:'',
         fecalta:'',
         iduserumod:'',
@@ -209,20 +219,22 @@
 
     created () {
       this.listar()
+      this.select()
     },
 
     methods: {
         crearPDF(){
             var columns = [
-                {title: "Razon Social", dataKey: "nombre"},
-                {title: "Siglas", dataKey: "nombrecorto"},
-                {title: "Codigo BCRA", dataKey: "codigoBCRA"},
+                {title: "Empresa", dataKey: "empresa"},
+                {title: "Orden", dataKey: "orden"},
+                {title: "Cuenta Banco", dataKey: "bancuenta"},
+                {title: "Cuenta Contable", dataKey: "concuenta"},
                 {title: "Activo", dataKey: "activo"}
             ];
             var rows = [];
 
-            this.bancos.map(function(x){
-                rows.push({nombre:x.nombre,nombrecorto:x.nombrecorto,codigoBCRA:x.codigoBCRA,activo:x.activo});
+            this.asocuentas.map(function(x){
+                rows.push({empresa:x.empresa,orden:x.orden,bancuenta:x.bancuenta,concuenta:x.concuenta,activo:x.activo});
             });
 
             // Only pt supported (not mm or in)
@@ -230,31 +242,72 @@
             doc.autoTable(columns, rows, {
                 margin: {top: 60},
                 addPageContent: function(data) {
-                    doc.text("Listado de Bancos", 40, 30);
+                    doc.text("Listado de Asociacion Cuentas", 40, 30);
                 }
             });
-            doc.save('Bancos.pdf');
+            doc.save('Asocuentas.pdf');
         },
         listar(){
             let me=this;
             let header={"Authorization" : "Bearer " + this.$store.state.token};
             let configuracion= {headers : header};
             // console.log(configuracion);
-            axios.get('api/Bancos/Listar',configuracion).then(function(response){
+            axios.get('api/Asocuentas/Listar',configuracion).then(function(response){
                 // console.log(response);
-                me.bancos=response.data;
+                me.asocuentas=response.data;
             }).catch(function(error){
                 me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
                 me.snackbar = true;
                 console.log(error);
             });
         },
-
+        select(){
+            let me=this;
+            var empresasArray=[];
+            var bancuentasArray=[];
+            var concuentasArray=[];
+            let header={"Authorization" : "Bearer " + this.$store.state.token};
+            let configuracion= {headers : header};
+            axios.get('api/Empresas/Select',configuracion).then(function(response){
+                // console.log(response);
+                empresasArray=response.data;
+                empresasArray.map(function(x){
+                    me.empresas.push({text: x.nombre, value:x.id});
+                });
+            }).catch(function(error){
+                me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
+                me.snackbar = true;
+                console.log(error);
+            });
+            axios.get('api/Bancuentas/Select',configuracion).then(function(response){
+                // console.log(response);
+                bancuentasArray=response.data;
+                bancuentasArray.map(function(x){
+                    me.bancuentas.push({text: x.banco+x.tipo+x.moneda+x.numcuenta, value:x.id, empresaId:x.empresaId});
+                });
+            }).catch(function(error){
+                me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
+                me.snackbar = true;
+                console.log(error);
+            });
+            axios.get('api/Concuentas/Select',configuracion).then(function(response){
+                // console.log(response);
+                concuentasArray=response.data;
+                concuentasArray.map(function(x){
+                    me.concuentas.push({text: x.apporigen+x.numcuenta, value:x.id, empresaId:x.empresaId});
+                });
+            }).catch(function(error){
+                me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
+                me.snackbar = true;
+                console.log(error);
+            });
+        },
         editItem (item) {
                 this.id=item.id;
-                this.nombre=item.nombre;
-                this.nombrecorto=item.nombrecorto;
-                this.codigoBCRA=item.codigoBCRA;
+                this.orden=item.orden;
+                this.empresaId=item.empresaId;
+                this.bancuentaId=item.bancuentaId;
+                this.concuentaId=item.concuentaId;
                 this.iduseralta=item.iduseralta;
                 this.fecalta=item.fecalta;
                 this.iduserumod=item.iduserumod;
@@ -269,7 +322,7 @@
             if (resulta) {
                 let header={"Authorization" : "Bearer " + me.$store.state.token};
                 let configuracion= {headers : header};
-                axios.delete('api/Bancos/Eliminar/'+item.id,configuracion).then(function(response){
+                axios.delete('api/Asocuentas/Eliminar/'+item.id,configuracion).then(function(response){
                     me.close();
                     me.listar();
                 }).catch(function(error){
@@ -286,9 +339,9 @@
         },
         limpiar(){
             this.id="";
-            this.nombre="";
-            this.nombrecorto="";
-            this.codigoBCRA="";
+            this.orden="";
+            this.bancuentaId="";
+            this.concuentaId="";
             this.iduseralta = "";
             this.fecalta = "";
             this.iduserumod = "";
@@ -307,11 +360,12 @@
             if (me.editedIndex > -1) {
                 //Código para editar
                 //Código para guardar
-                axios.put('api/Bancos/Actualizar',{
+                axios.put('api/Asocuentas/Actualizar',{
                     'Id':me.id,
-                    'nombre': me.nombre,
-                    'nombrecorto': me.nombrecorto,
-                    'codigoBCRA': me.codigoBCRA,
+                    'empresaId': me.empresaId,
+                    'orden': me.orden,
+                    'bancuentaId': me.bancuentaId,
+                    'concuentaId': me.concuentaId,
                     'iduseralta': me.iduseralta,
                     'fecalta': me.fecalta,
                     'iduserumod': me.$store.state.usuario.idusuario,
@@ -327,10 +381,11 @@
                 });
             } else {
                 //Código para guardar
-                axios.post('api/Bancos/Crear',{
-                    'nombre': me.nombre,
-                    'nombrecorto': me.nombrecorto,
-                    'codigoBCRA': me.codigoBCRA,
+                axios.post('api/Asocuentas/Crear',{
+                    'empresaId': me.empresaId,
+                    'orden': me.orden,
+                    'bancuentaId': me.bancuentaId,
+                    'concuentaId': me.concuentaId,
                     'iduseralta': me.$store.state.usuario.idusuario                           
                 },configuracion).then(function(response){
                     me.close();
@@ -347,11 +402,17 @@
             this.valida=0;
             this.validaMensaje=[];
 
-            if (this.nombre.length<3 || this.nombre.length>50){
-                this.validaMensaje.push("El Banco debe tener más de 3 caracteres y menos de 50 caracteres.");
+            if (this.orden.length<3 || this.orden.length>3){
+                this.validaMensaje.push("El orden debe tener más de 3 caracteres.");
             }
-            if (this.nombrecorto.length<3 || this.nombrecorto.length>3){
-                this.validaMensaje.push("la sigla debe tener 3 caracteres.");
+            if (!this.empresaId){
+                this.validaMensaje.push("Ingrese una Empresa.");
+            }
+            if (!this.bancuentaId){
+                this.validaMensaje.push("Seleccione un Cuenta Bancaria.");
+            }
+            if (!this.concuentaId){
+                this.validaMensaje.push("Seleccione una Cuenta Contable.");
             }
             if (this.validaMensaje.length){
                 this.valida=1;
@@ -380,7 +441,7 @@
             let me=this;
             let header={"Authorization" : "Bearer " + this.$store.state.token};
             let configuracion= {headers : header};
-            axios.put('api/Bancos/Activar/'+this.adId,{},configuracion).then(function(response){
+            axios.put('api/Asocuentas/Activar/'+this.adId,{},configuracion).then(function(response){
                 me.adModal=0;
                 me.adAccion=0;
                 me.adNombre="";
@@ -396,7 +457,7 @@
             let me=this;
             let header={"Authorization" : "Bearer " + this.$store.state.token};
             let configuracion= {headers : header};
-            axios.put('api/Bancos/Desactivar/'+this.adId,{},configuracion).then(function(response){
+            axios.put('api/Asocuentas/Desactivar/'+this.adId,{},configuracion).then(function(response){
                 me.adModal=0;
                 me.adAccion=0;
                 me.adNombre="";

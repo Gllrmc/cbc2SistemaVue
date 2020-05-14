@@ -179,6 +179,26 @@
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
+            <v-list-item :to="{ name: 'concuentas'}">
+              <v-list-item-action>
+                <v-icon>table_chart</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>
+                  Cuentas Contables
+                </v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item :to="{ name: 'asocuentas'}">
+              <v-list-item-action>
+                <v-icon>table_chart</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>
+                  Asociacion de Cuentas
+                </v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
             <v-list-item :to="{ name: 'empresas'}">
               <v-list-item-action>
                 <v-icon>table_chart</v-icon>

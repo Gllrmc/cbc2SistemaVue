@@ -4,6 +4,8 @@ import Home from '../views/Home.vue'
 import Login from '../components/Login.vue'
 import Banco from '../components/Banco.vue'
 import Bancuenta from '../components/Bancuenta.vue'
+import Concuenta from '../components/Concuenta.vue'
+import Asocuenta from '../components/Asocuenta.vue'
 import Conbanco from '../components/Conbanco.vue'
 import Conconta from '../components/Conconta.vue'
 import Grpconcepto from '../components/Grpconcepto.vue'
@@ -56,6 +58,30 @@ Vue.use(VueRouter)
     path: '/bancuentas',
     name: 'bancuentas',
     component: Bancuenta,
+    meta: {
+      administrador: true,
+      jefeadministracion: true,
+      conciliador: true,
+      asistadministracion: true,
+      dataentry: true
+    }
+  },
+  {
+    path: '/concuentas',
+    name: 'concuentas',
+    component: Concuenta,
+    meta: {
+      administrador: true,
+      jefeadministracion: true,
+      conciliador: true,
+      asistadministracion: true,
+      dataentry: true
+    }
+  },
+  {
+    path: '/asocuentas',
+    name: 'asocuentas',
+    component: Asocuenta,
     meta: {
       administrador: true,
       jefeadministracion: true,
