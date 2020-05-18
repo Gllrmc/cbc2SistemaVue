@@ -3,9 +3,11 @@
         <v-row align="start">
             <v-col>
                 <v-data-table
+                v-model="selected"
                 :headers="headers"
-                :items="asocuentas"
+                :items="movimientos"
                 :search="search"
+                show-select
                 class="elevation-1"
                 no-data-text="Nada para mostrar"
                 >
@@ -14,7 +16,7 @@
                         <div class="ma-2">
                             <v-btn small @click="crearPDF()"><v-icon>print</v-icon></v-btn>
                         </div>
-                        <v-toolbar-title>Asociación Cuentas</v-toolbar-title>
+                        <v-toolbar-title>Conciliacion de Movimientos</v-toolbar-title>
                         <v-snackbar
                             v-model="snackbar"
                             :timeout="timeout"
@@ -40,7 +42,7 @@
                         <v-spacer></v-spacer>
                         <v-text-field label="Búsqueda" outlined v-model="search" append-icon="search" single-line hide-details></v-text-field>
                         <v-spacer></v-spacer>
-                        <v-dialog v-model="dialog" max-width="600px">
+                        <v-dialog v-model="dialog" max-width="800px">
                             <template v-slot:activator="{ on }">
                             <v-btn color="primary" dark class="mb-2" v-on="on">Nuevo</v-btn>
                             </template>
@@ -51,19 +53,25 @@
                             <v-card-text>
                                 <v-container grid-list-md>
                                     <v-row dense>
-                                        <v-col cols="12" sm="9" md="9">
+                                        <v-col cols="12" sm="6" md="6">
                                             <v-select v-model="empresaId" 
                                             :items = "empresas" label = "Empresa">
                                             </v-select>
                                         </v-col>
+                                        <v-col cols="12" sm="6" md="6">
+                                            <v-autocomplete v-model="bancoId" 
+                                            clearable 
+                                            :items = "bancos" label = "Banco">
+                                            </v-autocomplete>
+                                        </v-col>
                                         <v-col cols="12" sm="3" md="3">
-                                            <v-text-field v-model="orden" label="Orden"></v-text-field>
+                                            <v-select v-model="tipo" :items = "tipos" label="Tipo"></v-select>
+                                        </v-col>
+                                        <v-col cols="12" sm="3" md="3">
+                                            <v-select v-model="moneda" :items = "monedas" label="Moneda"></v-select>
                                         </v-col>
                                         <v-col cols="12" sm="6" md="6">
-                                            <v-select v-model="bancuentaId" :items = "bancuentas" label="Cuenta Banco"></v-select>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="6">
-                                            <v-select v-model="concuentaId" :items = "concuentas" label="Cuenta Contable"></v-select>
+                                            <v-text-field v-model="numcuenta" label="#Cuenta"></v-text-field>
                                         </v-col>
                                         <v-col cols="12" sm="12" md="12" v-show="valida">
                                             <div class="red--text" v-for="v in validaMensaje" :key="v" v-text="v">
@@ -167,21 +175,34 @@
   import autoTable from 'jspdf-autotable';
   export default {
     data: () => ({
+        selected: [],
         snackbar:false,
         snacktext: '',
         timeout: 4000,
-        asocuentas: [],
+        movimientos: [],
         empresas: [],
-        bancuentas: [],
-        concuentas: [],
+        bancos: [],
         dialog: false,
+        tipos: [
+            { value: 'CC', text: 'Cuenta Corriente'},
+            { value: 'CA', text: 'Caja de Ahorro'}
+        ],
+        monedas: [
+            { value: 'ARS', text: 'Peso Argentino'},
+            { value: 'USD', text: 'US Dolar'},
+            { value: 'EUR', text: 'Euro'}
+        ],
         headers: [
             { text: '[Opciones]', value: 'actions', align: 'start', sortable: false },
-            { text: 'Orden', value: 'orden', align: 'start', sortable: true },
-            { text: 'Descripcion', value: 'descripcion', align: 'start', sortable: true },
             { text: 'Empresa', value: 'empresa', align: 'start', sortable: true },
-            { text: 'Cuenta de Banco', value: 'bancuenta', align: 'start', sortable: true },
-            { text: 'Cuenta Contable', value: 'concuenta', align: 'start', sortable: true },
+            { text: 'Cuentas Asociadas', value: 'asocuenta', align: 'center', sortable: true },
+            { text: 'Año/Mes', value: 'aniomes', align: 'start', sortable: true },
+            { text: '#Asiento', value: 'asientoId', align: 'center', sortable: true },
+            { text: 'Origen', value: 'origen', align: 'start', sortable: true },
+            { text: 'Grupo Conceptos', value: 'grpconcepto', align: 'start', sortable: true },
+            { text: 'Concepto', value: 'concepto', align: 'center', sortable: true },
+            { text: 'Fecha', value: 'fecha', align: 'start', sortable: true },
+            { text: 'Importe', value: 'importe', align: 'start', sortable: true },
             { text: 'Estado', value: 'activo', align: 'center', sortable: true  },
             { text: 'Creador Id', value: 'iduseralta', sortable: true },
             { text: 'Fecha Hora Creación', value: 'fecalta', sortable: true },
@@ -192,11 +213,10 @@
         editedIndex: -1,
         id: '',
         empresaId: '',
-        orden: '',
-        bancuentaId: '',
-        bancuenta: '',
-        concuentaId: '',
-        concuenta: '',
+        bancoId: '',
+        tipo: '',
+        moneda: '',
+        numcuenta: '',
         iduseralta:'',
         fecalta:'',
         iduserumod:'',
@@ -212,7 +232,7 @@
 
     computed: {
       formTitle () {
-        return this.editedIndex === -1 ? 'Nuevo Banco' : 'Actualizar Banco'
+        return this.editedIndex === -1 ? 'Nueva Cuenta de Banco' : 'Actualizar Cuenta de Banco'
       },
     },
 
@@ -223,23 +243,24 @@
     },
 
     created () {
-      this.listar()
-      this.select()
+        this.select();
+        this.listar();
     },
 
     methods: {
         crearPDF(){
             var columns = [
                 {title: "Empresa", dataKey: "empresa"},
-                {title: "Orden", dataKey: "orden"},
-                {title: "Cuenta Banco", dataKey: "bancuenta"},
-                {title: "Cuenta Contable", dataKey: "concuenta"},
+                {title: "Banco", dataKey: "banco"},
+                {title: "Tipo", dataKey: "tipo"},
+                {title: "Moneda", dataKey: "moneda"},
+                {title: "Cuenta", dataKey: "numcuenta"},
                 {title: "Activo", dataKey: "activo"}
             ];
             var rows = [];
 
-            this.asocuentas.map(function(x){
-                rows.push({empresa:x.empresa,orden:x.orden,bancuenta:x.bancuenta,concuenta:x.concuenta,activo:x.activo});
+            this.movimientos.map(function(x){
+                rows.push({empresa:x.empresa, banco:x.banco,tipo:x.tipo,moneda:x.nomneda,numcuenta:x.numcuenta,activo:x.activo});
             });
 
             // Only pt supported (not mm or in)
@@ -247,19 +268,19 @@
             doc.autoTable(columns, rows, {
                 margin: {top: 60},
                 addPageContent: function(data) {
-                    doc.text("Listado de Asociacion Cuentas", 40, 30);
+                    doc.text("Listado de Movimientos", 40, 30);
                 }
             });
-            doc.save('Asocuentas.pdf');
+            doc.save('Movimientos.pdf');
         },
         listar(){
             let me=this;
             let header={"Authorization" : "Bearer " + this.$store.state.token};
             let configuracion= {headers : header};
             // console.log(configuracion);
-            axios.get('api/Asocuentas/Listar',configuracion).then(function(response){
+            axios.get('api/Movimientos/Listar',configuracion).then(function(response){
                 // console.log(response);
-                me.asocuentas=response.data;
+                me.movimientos=response.data;
             }).catch(function(error){
                 me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
                 me.snackbar = true;
@@ -269,8 +290,7 @@
         select(){
             let me=this;
             var empresasArray=[];
-            var bancuentasArray=[];
-            var concuentasArray=[];
+            var bancosArray=[];
             let header={"Authorization" : "Bearer " + this.$store.state.token};
             let configuracion= {headers : header};
             axios.get('api/Empresas/Select',configuracion).then(function(response){
@@ -284,36 +304,25 @@
                 me.snackbar = true;
                 console.log(error);
             });
-            axios.get('api/Bancuentas/Select',configuracion).then(function(response){
+            axios.get('api/Bancos/Select',configuracion).then(function(response){
                 // console.log(response);
-                bancuentasArray=response.data;
-                bancuentasArray.map(function(x){
-                    me.bancuentas.push({text: x.banco+x.tipo+x.moneda+x.numcuenta, value:x.id, empresaId:x.empresaId});
+                bancosArray=response.data;
+                bancosArray.map(function(x){
+                    me.bancos.push({text: x.nombre,value:x.id});
                 });
             }).catch(function(error){
                 me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
                 me.snackbar = true;
                 console.log(error);
             });
-            axios.get('api/Concuentas/Select',configuracion).then(function(response){
-                // console.log(response);
-                concuentasArray=response.data;
-                concuentasArray.map(function(x){
-                    me.concuentas.push({text: x.apporigen+x.moneda+x.numcuenta, value:x.id, empresaId:x.empresaId});
-                });
-            }).catch(function(error){
-                me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
-                me.snackbar = true;
-                console.log(error);
-            });
-        },
+        },            
         editItem (item) {
                 this.id=item.id;
-                this.orden=item.orden;
-                this.descripcion = item.descripcion;
                 this.empresaId=item.empresaId;
-                this.bancuentaId=item.bancuentaId;
-                this.concuentaId=item.concuentaId;
+                this.bancoId=item.bancoId;
+                this.tipo=item.tipo;
+                this.moneda=item.moneda;
+                this.numcuenta=item.numcuenta;
                 this.iduseralta=item.iduseralta;
                 this.fecalta=item.fecalta;
                 this.iduserumod=item.iduserumod;
@@ -328,7 +337,7 @@
             if (resulta) {
                 let header={"Authorization" : "Bearer " + me.$store.state.token};
                 let configuracion= {headers : header};
-                axios.delete('api/Asocuentas/Eliminar/'+item.id,configuracion).then(function(response){
+                axios.delete('api/Movimientos/Eliminar/'+item.id,configuracion).then(function(response){
                     me.close();
                     me.listar();
                 }).catch(function(error){
@@ -345,10 +354,11 @@
         },
         limpiar(){
             this.id="";
-            this.orden="";
-            this.descripcion="";
-            this.bancuentaId="";
-            this.concuentaId="";
+            this.empresaId="";
+            this.bancoId="";
+            this.tipo="";
+            this.moneda="";
+            this.numcuenta="";
             this.iduseralta = "";
             this.fecalta = "";
             this.iduserumod = "";
@@ -367,13 +377,13 @@
             if (me.editedIndex > -1) {
                 //Código para editar
                 //Código para guardar
-                axios.put('api/Asocuentas/Actualizar',{
+                axios.put('api/Movimientos/Actualizar',{
                     'Id':me.id,
                     'empresaId': me.empresaId,
-                    'orden': me.orden,
-                    'descripcion': (me.bancuentas.find(x => x.value===me.bancuentaId && x.empresaId===me.empresaId)["text"]) + "/" + (me.concuentas.find(x => x.value===me.concuentaId && x.empresaId===me.empresaId)["text"]),
-                    'bancuentaId': me.bancuentaId,
-                    'concuentaId': me.concuentaId,
+                    'bancoId': me.bancoId,
+                    'tipo': me.tipo,
+                    'moneda': me.moneda,
+                    'numcuenta': me.numcuenta,
                     'iduseralta': me.iduseralta,
                     'fecalta': me.fecalta,
                     'iduserumod': me.$store.state.usuario.idusuario,
@@ -389,12 +399,12 @@
                 });
             } else {
                 //Código para guardar
-                axios.post('api/Asocuentas/Crear',{
+                axios.post('api/Movimientos/Crear',{
                     'empresaId': me.empresaId,
-                    'orden': me.orden,
-                    'descripcion': (me.bancuentas.find(x => x.value===me.bancuentaId && x.empresaId===me.empresaId)["text"]) + "/" + (me.concuentas.find(x => x.value===me.concuentaId && x.empresaId===me.empresaId)["text"]),
-                    'bancuentaId': me.bancuentaId,
-                    'concuentaId': me.concuentaId,
+                    'bancoId': me.bancoId,
+                    'tipo': me.tipo,
+                    'moneda': me.moneda,
+                    'numcuenta': me.numcuenta,
                     'iduseralta': me.$store.state.usuario.idusuario                           
                 },configuracion).then(function(response){
                     me.close();
@@ -411,17 +421,20 @@
             this.valida=0;
             this.validaMensaje=[];
 
-            if (this.orden.length<3 || this.orden.length>3){
-                this.validaMensaje.push("El orden debe tener más de 3 caracteres.");
+            if (this.numcuenta.length<3 || this.numcuenta.length>20){
+                this.validaMensaje.push("El numero de cuenta debe tener más de 3 caracteres y menos de 20 caracteres.");
             }
             if (!this.empresaId){
                 this.validaMensaje.push("Ingrese una Empresa.");
             }
-            if (!this.bancuentaId){
-                this.validaMensaje.push("Seleccione un Cuenta Bancaria.");
+            if (!this.bancoId){
+                this.validaMensaje.push("Ingrese un Banco.");
             }
-            if (!this.concuentaId){
-                this.validaMensaje.push("Seleccione una Cuenta Contable.");
+            if (!this.tipo){
+                this.validaMensaje.push("Ingrese el tipo de cuenta.");
+            }
+            if (!this.moneda){
+                this.validaMensaje.push("Ingrese la moneda de la cuenta.");
             }
             if (this.validaMensaje.length){
                 this.valida=1;
@@ -450,7 +463,7 @@
             let me=this;
             let header={"Authorization" : "Bearer " + this.$store.state.token};
             let configuracion= {headers : header};
-            axios.put('api/Asocuentas/Activar/'+this.adId,{},configuracion).then(function(response){
+            axios.put('api/Movimientos/Activar/'+this.adId,{},configuracion).then(function(response){
                 me.adModal=0;
                 me.adAccion=0;
                 me.adNombre="";
@@ -466,7 +479,7 @@
             let me=this;
             let header={"Authorization" : "Bearer " + this.$store.state.token};
             let configuracion= {headers : header};
-            axios.put('api/Asocuentas/Desactivar/'+this.adId,{},configuracion).then(function(response){
+            axios.put('api/Movimientos/Desactivar/'+this.adId,{},configuracion).then(function(response){
                 me.adModal=0;
                 me.adAccion=0;
                 me.adNombre="";

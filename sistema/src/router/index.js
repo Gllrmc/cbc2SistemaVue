@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from '../components/Login.vue'
+import Movimiento from '../components/Movimiento.vue'
 import Banco from '../components/Banco.vue'
 import Bancuenta from '../components/Bancuenta.vue'
 import Concuenta from '../components/Concuenta.vue'
@@ -40,6 +41,18 @@ Vue.use(VueRouter)
     component: Login,
     meta:{
       libre: true
+    }
+  },
+  {
+    path: '/movimientos',
+    name: 'movimientos',
+    component: Movimiento,
+    meta: {
+      administrador: true,
+      jefeadministracion: true,
+      conciliador: true,
+      asistadministracion: true,
+      dataentry: true
     }
   },
   {

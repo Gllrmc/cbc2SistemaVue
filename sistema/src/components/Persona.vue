@@ -1,244 +1,246 @@
 <template>
-    <v-row align="start">
-        <v-col>
-            <v-data-table
-            :headers="headers"
-            :items="personas"
-            :search="search"
-            class="elevation-1"
-            no-data-text="Nada para mostrar"
-            >
-            <template v-slot:top>
-                <v-toolbar flat color="white">
-                    <div class="ma-2">
-                        <v-btn small @click="crearPDF()"><v-icon>print</v-icon></v-btn>
-                    </div>
-                    <v-toolbar-title>Personas</v-toolbar-title>
-                    <v-snackbar
-                        v-model="snackbar"
-                        :timeout="timeout"
-                        right
-                        color="error"
-                        >
-                        {{ snacktext }}
-                        <v-btn 
+    <v-container fluid>
+        <v-row align="start">
+            <v-col>
+                <v-data-table
+                :headers="headers"
+                :items="personas"
+                :search="search"
+                class="elevation-1"
+                no-data-text="Nada para mostrar"
+                >
+                <template v-slot:top>
+                    <v-toolbar flat color="white">
+                        <div class="ma-2">
+                            <v-btn small @click="crearPDF()"><v-icon>print</v-icon></v-btn>
+                        </div>
+                        <v-toolbar-title>Personas</v-toolbar-title>
+                        <v-snackbar
+                            v-model="snackbar"
+                            :timeout="timeout"
+                            right
                             color="error"
-                            dark
+                            >
+                            {{ snacktext }}
+                            <v-btn 
+                                color="error"
+                                dark
+                                vertical
+                                text
+                                @click="snackbar = false"
+                            >
+                                Cerrar
+                            </v-btn>
+                        </v-snackbar>                   
+                        <v-divider
+                            class="mx-4"
+                            inset
                             vertical
-                            text
-                            @click="snackbar = false"
-                        >
-                            Cerrar
-                        </v-btn>
-                    </v-snackbar>                   
-                    <v-divider
-                        class="mx-4"
-                        inset
-                        vertical
-                    ></v-divider>
-                    <v-spacer></v-spacer>
-                    <v-text-field label="Búsqueda" outlined v-model="search" append-icon="search" single-line hide-details></v-text-field>
-                    <v-spacer></v-spacer>
-                    <v-dialog v-model="dialog" max-width="600px">
-                        <template v-slot:activator="{ on }">
-                        <v-btn color="primary" dark class="mb-2" v-on="on">Nuevo</v-btn>
-                        </template>
-                        <v-card>
-                        <v-card-title>
-                            <span class="headline">{{ formTitle }}</span>
-                        </v-card-title>
-                        <v-card-text>
-                            <v-container grid-list-md>
-                                <v-row dense>
-                                    <v-col cols="12" sm="12" md="12">
-                                        <v-text-field v-model="nombre" label="Nombre">
-                                        </v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" sm="3" md="3">
-                                        <v-text-field v-model="emailpersonal" label="eMail">
-                                        </v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" sm="3" md="3">
-                                        <v-text-field v-model="telefonopersonal" label="Telefono">
-                                        </v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" sm="3" md="3">
-                                        <v-select v-model="tipodocumento" 
-                                        :items="tipodocumentos" label="Tipo Doc.">
-                                        </v-select>
-                                    </v-col>                                
-                                    <v-col cols="12" sm="3" md="3">
-                                        <v-text-field v-model="numdocumento" label="Nro. Documento">
-                                        </v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" sm="10" md="10">
-                                        <v-text-field v-model="domicilio" label="Domicilio">
-                                        </v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" sm="2" md="2">
-                                        <v-text-field v-model="cpostal" label="C.P.">
-                                        </v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" sm="4" md="4">
-                                        <v-text-field v-model="localidad" label="Localidad">
-                                        </v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" sm="4" md="4">
-                                        <v-autocomplete 
-                                            v-model="paisId"
-                                            clearable
-                                            :items = "paises"
-                                            :search-input.sync="searchpa"
-                                            @change="filterProvincias()"
-                                            label = "País">
-                                        </v-autocomplete>
-                                    </v-col>
-                                    <v-col cols="12" sm="4" md="4">
-                                        <v-autocomplete 
-                                            v-model="provinciaId"
-                                            clearable
-                                            :items = "provinciasf" 
-                                            :search-input.sync="searchpr"                                    
-                                            @change="asignaPais()"                                   
-                                            label = "Provincia">
-                                        </v-autocomplete>
-                                    </v-col>
-                                    <v-col cols="12" sm="4" md="4">
-                                        <input type="checkbox" id="esempleado" v-model="esempleado">
-                                        <label for = "esempleado"> Es empleado?</label>
-                                    </v-col>                                
-                                    <v-col cols="12" sm="4" md="4">
-                                        <input type="checkbox" id="esproveedor" v-model="esproveedor">
-                                        <label for = "esproveedor"> Es proveedor?</label>
-                                    </v-col>
-                                    <v-col cols="12" sm="4" md="4">
-                                        <input type="checkbox" id="escliente" v-model="escliente">
-                                        <label for = "escliente"> Es Cliente?</label>
-                                    </v-col> 
-                                    <v-col cols="12" sm="12" md="12" v-show="valida">
-                                        <div class="red--text" v-for="v in validaMensaje" :key="v" v-text="v">
-                                        </div>
-                                    </v-col> 
-                                </v-row>
-                            </v-container>
-                        </v-card-text>
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn color="blue darken-1" text @click="close">Cancelar</v-btn>
-                            <v-btn color="blue darken-1" text @click="guardar">Guardar</v-btn>
-                        </v-card-actions>
-                        </v-card>
-                    </v-dialog>
-                    <v-dialog v-model="adModal" max-width="390">
-                        <v-card>
-                            <v-card-title class="headline" v-if="adAccion==1">¿Activar Persona?</v-card-title>
-                            <v-card-title class="headline" v-if="adAccion==2">Bloquear Persona?</v-card-title>
+                        ></v-divider>
+                        <v-spacer></v-spacer>
+                        <v-text-field label="Búsqueda" outlined v-model="search" append-icon="search" single-line hide-details></v-text-field>
+                        <v-spacer></v-spacer>
+                        <v-dialog v-model="dialog" max-width="600px">
+                            <template v-slot:activator="{ on }">
+                            <v-btn color="primary" dark class="mb-2" v-on="on">Nuevo</v-btn>
+                            </template>
+                            <v-card>
+                            <v-card-title>
+                                <span class="headline">{{ formTitle }}</span>
+                            </v-card-title>
                             <v-card-text>
-                                Estás a punto de 
-                                <span v-if="adAccion==1">Activar </span>
-                                <span v-if="adAccion==2">Bloquear </span>
-                                la Persona: {{ adNombre }}
+                                <v-container grid-list-md>
+                                    <v-row dense>
+                                        <v-col cols="12" sm="12" md="12">
+                                            <v-text-field v-model="nombre" label="Nombre">
+                                            </v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" sm="3" md="3">
+                                            <v-text-field v-model="emailpersonal" label="eMail">
+                                            </v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" sm="3" md="3">
+                                            <v-text-field v-model="telefonopersonal" label="Telefono">
+                                            </v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" sm="3" md="3">
+                                            <v-select v-model="tipodocumento" 
+                                            :items="tipodocumentos" label="Tipo Doc.">
+                                            </v-select>
+                                        </v-col>                                
+                                        <v-col cols="12" sm="3" md="3">
+                                            <v-text-field v-model="numdocumento" label="Nro. Documento">
+                                            </v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" sm="10" md="10">
+                                            <v-text-field v-model="domicilio" label="Domicilio">
+                                            </v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" sm="2" md="2">
+                                            <v-text-field v-model="cpostal" label="C.P.">
+                                            </v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" sm="4" md="4">
+                                            <v-text-field v-model="localidad" label="Localidad">
+                                            </v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" sm="4" md="4">
+                                            <v-autocomplete 
+                                                v-model="paisId"
+                                                clearable
+                                                :items = "paises"
+                                                :search-input.sync="searchpa"
+                                                @change="filterProvincias()"
+                                                label = "País">
+                                            </v-autocomplete>
+                                        </v-col>
+                                        <v-col cols="12" sm="4" md="4">
+                                            <v-autocomplete 
+                                                v-model="provinciaId"
+                                                clearable
+                                                :items = "provinciasf" 
+                                                :search-input.sync="searchpr"                                    
+                                                @change="asignaPais()"                                   
+                                                label = "Provincia">
+                                            </v-autocomplete>
+                                        </v-col>
+                                        <v-col cols="12" sm="4" md="4">
+                                            <input type="checkbox" id="esempleado" v-model="esempleado">
+                                            <label for = "esempleado"> Es empleado?</label>
+                                        </v-col>                                
+                                        <v-col cols="12" sm="4" md="4">
+                                            <input type="checkbox" id="esproveedor" v-model="esproveedor">
+                                            <label for = "esproveedor"> Es proveedor?</label>
+                                        </v-col>
+                                        <v-col cols="12" sm="4" md="4">
+                                            <input type="checkbox" id="escliente" v-model="escliente">
+                                            <label for = "escliente"> Es Cliente?</label>
+                                        </v-col> 
+                                        <v-col cols="12" sm="12" md="12" v-show="valida">
+                                            <div class="red--text" v-for="v in validaMensaje" :key="v" v-text="v">
+                                            </div>
+                                        </v-col> 
+                                    </v-row>
+                                </v-container>
                             </v-card-text>
                             <v-card-actions>
-                                <v-spacer/>
-                                <v-btn small @click="activarDesactivarCerrar">Cancel
-                                <v-icon>cancel</v-icon>
-                                </v-btn>
-                                <v-btn small v-if="adAccion==1" @click="activar">Activar
-                                <v-icon>lock_open</v-icon>
-                                </v-btn>
-                                <v-btn small v-if="adAccion==2" @click="desactivar">Bloquear
-                                <v-icon>lock</v-icon>
-                                </v-btn>
+                                <v-spacer></v-spacer>
+                                <v-btn color="blue darken-1" text @click="close">Cancelar</v-btn>
+                                <v-btn color="blue darken-1" text @click="guardar">Guardar</v-btn>
                             </v-card-actions>
-                        </v-card>
-                    </v-dialog>
-                </v-toolbar>
-            </template>
-            <template v-slot:item.actions="{ item }">
-                <v-icon
-                small
-                class="mr-2"
-                @click="editItem(item)"
-                >
-                edit
-                </v-icon>
-                <v-icon
-                small
-                @click="deleteItem(item)"
-                >
-                delete
-                </v-icon>
-                    <template v-if="item.activo">
-                        <v-icon
-                        small
-                        @click="activarDesactivarMostrar(2,item)"
-                        >
-                        block
-                        </v-icon>
-                    </template>
-                    <template v-else>
-                        <v-icon
-                        small
-                        @click="activarDesactivarMostrar(1,item)"
-                        >
-                        check
-                        </v-icon>
+                            </v-card>
+                        </v-dialog>
+                        <v-dialog v-model="adModal" max-width="390">
+                            <v-card>
+                                <v-card-title class="headline" v-if="adAccion==1">¿Activar Persona?</v-card-title>
+                                <v-card-title class="headline" v-if="adAccion==2">Bloquear Persona?</v-card-title>
+                                <v-card-text>
+                                    Estás a punto de 
+                                    <span v-if="adAccion==1">Activar </span>
+                                    <span v-if="adAccion==2">Bloquear </span>
+                                    la Persona: {{ adNombre }}
+                                </v-card-text>
+                                <v-card-actions>
+                                    <v-spacer/>
+                                    <v-btn small @click="activarDesactivarCerrar">Cancel
+                                    <v-icon>cancel</v-icon>
+                                    </v-btn>
+                                    <v-btn small v-if="adAccion==1" @click="activar">Activar
+                                    <v-icon>lock_open</v-icon>
+                                    </v-btn>
+                                    <v-btn small v-if="adAccion==2" @click="desactivar">Bloquear
+                                    <v-icon>lock</v-icon>
+                                    </v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-dialog>
+                    </v-toolbar>
                 </template>
-            </template>
-            <template v-slot:item.activo="{ item }">
-                <td>
-                    <div v-if="item.activo">
-                        <span class="blue--text">Activo</span>
-                    </div>
-                    <div v-else>
-                        <span class="red--text">Inactivo</span>
-                    </div>
-                </td>
-            </template>
-            <template v-slot:item.esempleado="{ item }">
+                <template v-slot:item.actions="{ item }">
+                    <v-icon
+                    small
+                    class="mr-2"
+                    @click="editItem(item)"
+                    >
+                    edit
+                    </v-icon>
+                    <v-icon
+                    small
+                    @click="deleteItem(item)"
+                    >
+                    delete
+                    </v-icon>
+                        <template v-if="item.activo">
+                            <v-icon
+                            small
+                            @click="activarDesactivarMostrar(2,item)"
+                            >
+                            block
+                            </v-icon>
+                        </template>
+                        <template v-else>
+                            <v-icon
+                            small
+                            @click="activarDesactivarMostrar(1,item)"
+                            >
+                            check
+                            </v-icon>
+                    </template>
+                </template>
+                <template v-slot:item.activo="{ item }">
                     <td>
-                        <div v-if="item.esempleado">
-                            <span class="green--text">Si</span>
+                        <div v-if="item.activo">
+                            <span class="blue--text">Activo</span>
                         </div>
                         <div v-else>
-                            <span class="blue--text">No</span>
+                            <span class="red--text">Inactivo</span>
                         </div>
-                    </td>                   
-            </template>
-            <template v-slot:item.esproveedor="{ item }">
-                    <td>
-                        <div v-if="item.esproveedor">
-                            <span class="green--text">Si</span>
-                        </div>
-                        <div v-else>
-                            <span class="blue--text">No</span>
-                        </div>
-                    </td>                   
-            </template>
-            <template v-slot:item.escliente="{ item }">
-                    <td>
-                        <div v-if="item.escliente">
-                            <span class="green--text">Si</span>
-                        </div>
-                        <div v-else>
-                            <span class="blue--text">No</span>
-                        </div>
-                    </td>                   
-            </template>
-            <template v-slot:item.fecalta="{ item }">
-                <td>{{ item.fecalta.substr(0, 16) }}</td>
-            </template>
-            <template v-slot:item.fecumod="{ item }">
-                <td>{{ item.fecumod.substr(0, 16) }}</td>
-            </template>
-            <template v-slot:no-data>
-                <v-btn color="primary" @click="listar">Resetear</v-btn>
-            </template>
-            </v-data-table>
+                    </td>
+                </template>
+                <template v-slot:item.esempleado="{ item }">
+                        <td>
+                            <div v-if="item.esempleado">
+                                <span class="green--text">Si</span>
+                            </div>
+                            <div v-else>
+                                <span class="blue--text">No</span>
+                            </div>
+                        </td>                   
+                </template>
+                <template v-slot:item.esproveedor="{ item }">
+                        <td>
+                            <div v-if="item.esproveedor">
+                                <span class="green--text">Si</span>
+                            </div>
+                            <div v-else>
+                                <span class="blue--text">No</span>
+                            </div>
+                        </td>                   
+                </template>
+                <template v-slot:item.escliente="{ item }">
+                        <td>
+                            <div v-if="item.escliente">
+                                <span class="green--text">Si</span>
+                            </div>
+                            <div v-else>
+                                <span class="blue--text">No</span>
+                            </div>
+                        </td>                   
+                </template>
+                <template v-slot:item.fecalta="{ item }">
+                    <td>{{ item.fecalta.substr(0, 16) }}</td>
+                </template>
+                <template v-slot:item.fecumod="{ item }">
+                    <td>{{ item.fecumod.substr(0, 16) }}</td>
+                </template>
+                <template v-slot:no-data>
+                    <v-btn color="primary" @click="listar">Resetear</v-btn>
+                </template>
+                </v-data-table>
 
-        </v-col>
-    </v-row>
+            </v-col>
+        </v-row>
+    </v-container>
 </template>
 <script>
   import axios from 'axios'

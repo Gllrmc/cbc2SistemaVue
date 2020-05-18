@@ -98,13 +98,13 @@
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
-            <v-list-item :to="{ name: 'conciliacion'}">
+            <v-list-item :to="{ name: 'movimientos'}">
               <v-list-item-action>
                 <v-icon>table_chart</v-icon>
               </v-list-item-action>
               <v-list-item-content>
                 <v-list-item-title>
-                  Conciliación
+                  Conciliación de Movimientos
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
@@ -126,16 +126,6 @@
               <v-list-item-content>
                 <v-list-item-title>
                   Datos Maestros
-                </v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item :to="{ name: 'asocuentas'}">
-              <v-list-item-action>
-                <v-icon>table_chart</v-icon>
-              </v-list-item-action>
-              <v-list-item-content>
-                <v-list-item-title>
-                  Asociacion Cuentas
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
