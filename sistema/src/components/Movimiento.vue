@@ -1,90 +1,80 @@
 <template>
-    <v-container fluid>
-        <v-row align="start">
-            <v-col>
-                <v-data-table
-                v-model="selected"
-                :headers="headers"
-                :items="movimientos"
-                :search="search"
-                show-select
-                class="elevation-1"
-                no-data-text="Nada para mostrar"
-                >
-                <template v-slot:top>
-                    <v-toolbar flat color="white">
-                        <div class="ma-2">
-                            <v-btn small @click="crearPDF()"><v-icon>print</v-icon></v-btn>
-                        </div>
-                        <v-toolbar-title>Conciliacion de Movimientos</v-toolbar-title>
-                        <v-snackbar
-                            v-model="snackbar"
-                            :timeout="timeout"
-                            right
-                            color="error"
-                            >
-                            {{ snacktext }}
-                            <v-btn 
-                                color="error"
-                                dark
-                                vertical
-                                text
-                                @click="snackbar = false"
-                            >
-                                Cerrar
-                            </v-btn>
-                        </v-snackbar>                   
-                        <v-divider
-                            class="mx-4"
-                            inset
-                            vertical
-                        ></v-divider>
-                        <v-spacer></v-spacer>
-                        <v-text-field label="Búsqueda" outlined v-model="search" append-icon="search" single-line hide-details></v-text-field>
-                        <v-spacer></v-spacer>
-                        <v-dialog v-model="dialog" max-width="800px">
-                            <template v-slot:activator="{ on }">
-                            <v-btn color="primary" dark class="mb-2" v-on="on">Nuevo</v-btn>
-                            </template>
+    <v-layout align-start>
+        <v-col cols=12>
+            <v-toolbar flat color="white">
+                <v-toolbar-title>Conciliacion</v-toolbar-title>
+                <v-snackbar
+                    v-model="snackbar"
+                    :timeout="timeout"
+                    right
+                    color="error"
+                    >
+                    {{ snacktext }}
+                    <v-btn 
+                        color="error"
+                        dark
+                        vertical
+                        text
+                        @click="snackbar = false"
+                    >
+                        Cerrar
+                    </v-btn>
+                </v-snackbar>                     
+                <v-divider
+                class="mx-2"
+                inset
+                vertical
+                ></v-divider>
+                <v-spacer></v-spacer>
+                <v-text-field class="text-xs-center" v-model="search" append-icon="search" label="Búsqueda" single-line hide-details></v-text-field>
+                <v-spacer></v-spacer>
+            </v-toolbar>
+            <v-dialog v-model="dialog" max-width="2000px" persistent>
+                <v-card>
+                    <v-toolbar color="blue darken-3" dark>
+                        <v-toolbar-title>Carga de Conciliaciones # {{empresa}} - {{asocuenta}} - {{aniomes}}</v-toolbar-title>
+                    </v-toolbar>
+                    <v-card-text>
+                        <v-dialog v-model="dialogForm" max-width="800px" persistent>
                             <v-card>
-                            <v-card-title>
+                                <v-card-title>
                                 <span class="headline">{{ formTitle }}</span>
-                            </v-card-title>
-                            <v-card-text>
-                                <v-container grid-list-md>
-                                    <v-row dense>
-                                        <v-col cols="12" sm="6" md="6">
-                                            <v-select v-model="empresaId" 
-                                            :items = "empresas" label = "Empresa">
-                                            </v-select>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="6">
-                                            <v-autocomplete v-model="bancoId" 
-                                            clearable 
-                                            :items = "bancos" label = "Banco">
-                                            </v-autocomplete>
-                                        </v-col>
-                                        <v-col cols="12" sm="3" md="3">
-                                            <v-select v-model="tipo" :items = "tipos" label="Tipo"></v-select>
-                                        </v-col>
-                                        <v-col cols="12" sm="3" md="3">
-                                            <v-select v-model="moneda" :items = "monedas" label="Moneda"></v-select>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="6">
-                                            <v-text-field v-model="numcuenta" label="#Cuenta"></v-text-field>
-                                        </v-col>
-                                        <v-col cols="12" sm="12" md="12" v-show="valida">
-                                            <div class="red--text" v-for="v in validaMensaje" :key="v" v-text="v">
-                                            </div>
-                                        </v-col> 
-                                    </v-row>
-                                </v-container>
-                            </v-card-text>
-                            <v-card-actions>
-                                <v-spacer></v-spacer>
-                                <v-btn color="blue darken-1" text @click="close">Cancelar</v-btn>
-                                <v-btn color="blue darken-1" text @click="guardar">Guardar</v-btn>
-                            </v-card-actions>
+                                </v-card-title>            
+                                <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-btn color="blue darken-1" flat @click.native="closeForm">Cancelar</v-btn>
+                                    <v-btn color="blue darken-1" flat @click.native="guardar">Guardar</v-btn>
+                                </v-card-actions>
+                                <v-card-text>
+                                    <v-container grid-list-md>
+                                        <v-row dense>
+                                            <v-col cols="12" sm="6" md="6">
+                                                <v-select v-model="empresaId" 
+                                                :items = "empresas" label = "Empresa">
+                                                </v-select>
+                                            </v-col>
+                                            <v-col cols="12" sm="6" md="6">
+                                                <v-autocomplete v-model="bancoId" 
+                                                clearable 
+                                                :items = "bancos" label = "Banco">
+                                                </v-autocomplete>
+                                            </v-col>
+                                            <v-col cols="12" sm="3" md="3">
+                                                <v-select v-model="tipo" :items = "tipos" label="Tipo"></v-select>
+                                            </v-col>
+                                            <v-col cols="12" sm="3" md="3">
+                                                <v-select v-model="moneda" :items = "monedas" label="Moneda"></v-select>
+                                            </v-col>
+                                            <v-col cols="12" sm="6" md="6">
+                                                <v-text-field v-model="numcuenta" label="#Cuenta"></v-text-field>
+                                            </v-col>
+                                            <v-col cols="12" sm="12" md="12" v-show="valida">
+                                                <div class="red--text" v-for="v in validaMensaje" :key="v" v-text="v">
+                                                </div>
+                                            </v-col> 
+                                        </v-row>
+                                    </v-container>
+                                </v-card-text>
                             </v-card>
                         </v-dialog>
                         <v-dialog v-model="adModal" max-width="290">
@@ -111,212 +101,374 @@
                                 </v-card-actions>
                             </v-card>
                         </v-dialog>
-                    </v-toolbar>
-                </template>
+                        <v-row fluid>
+                            <v-col cols="12" sm="6" md="6">
+                                <v-card-title>Pendientes</v-card-title>
+                                <v-data-table
+                                    v-model="selected"
+                                    :headers="headersDetallePend"
+                                    :items="nocmovs"
+                                    :search="search"
+                                    show-select
+                                    class="elevation-1"
+                                    >
+                                    <template v-slot:item.actions="{ item }">
+                                        <v-icon
+                                        small
+                                        class="mr-2"
+                                        @click="editItem(item)"
+                                        >
+                                        edit
+                                        </v-icon>
+                                        <v-icon
+                                        small
+                                        @click="deleteItem(item)"
+                                        >
+                                        delete
+                                        </v-icon>
+                                            <template v-if="item.activo">
+                                                <v-icon
+                                                small
+                                                @click="activarDesactivarMostrar(2,item)"
+                                                >
+                                                block
+                                                </v-icon>
+                                            </template>
+                                            <template v-else>
+                                                <v-icon
+                                                small
+                                                @click="activarDesactivarMostrar(1,item)"
+                                                >
+                                                check
+                                                </v-icon>
+                                        </template>
+                                    </template>
+                                    <template v-slot:item.activo="{ item }">
+                                        <td>
+                                            <div v-if="item.activo">
+                                                <span class="blue--text">Activo</span>
+                                            </div>
+                                            <div v-else>
+                                                <span class="red--text">Inactivo</span>
+                                            </div>
+                                        </td>
+                                    </template>
+                                    <template v-slot:item.fecha="{ item }">
+                                        <p class="text-center">{{ item.fecha.substr(0, 10) }}</p>
+                                    </template>
+                                    <template v-slot:item.importe="{ item }">
+                                        <p class="text-right">{{ formatPrice(item.importe)}}</p>
+                                    </template>
+
+                                    <template v-slot:item.unsgimporte="{ item }">
+                                        <p class="text-right">{{ formatPrice(item.unsgimporte)}}</p>
+                                    </template>
+                                    <template v-slot:item.fecalta="{ item }">
+                                        <td>{{ item.fecalta.substr(0, 16) }}</td>
+                                    </template>
+                                    <template v-slot:item.fecumod="{ item }">
+                                        <td>{{ item.fecumod.substr(0, 16) }}</td>
+                                    </template>
+                                    <template v-slot:no-data>
+                                        <v-btn color="primary" @click="listarDetail">Resetear</v-btn>
+                                    </template>
+                                </v-data-table>
+                            </v-col>
+                            <v-col cols="12"  sm="6" md="6">
+                                <v-card-title>Conciliados</v-card-title>
+                                <v-data-table
+                                    :headers="headersDetallePend"
+                                    :items="selected"
+                                    :search="search"
+                                    show-select
+                                    class="elevation-1"
+                                    >
+                                    <template v-slot:item.actions="{ item }">
+                                        <v-icon
+                                        small
+                                        class="mr-2"
+                                        @click="editItem(item)"
+                                        >
+                                        edit
+                                        </v-icon>
+                                        <v-icon
+                                        small
+                                        @click="deleteItem(item)"
+                                        >
+                                        delete
+                                        </v-icon>
+                                            <template v-if="item.activo">
+                                                <v-icon
+                                                small
+                                                @click="activarDesactivarMostrar(2,item)"
+                                                >
+                                                block
+                                                </v-icon>
+                                            </template>
+                                            <template v-else>
+                                                <v-icon
+                                                small
+                                                @click="activarDesactivarMostrar(1,item)"
+                                                >
+                                                check
+                                                </v-icon>
+                                        </template>
+                                    </template>
+                                    <template v-slot:item.activo="{ item }">
+                                        <td>
+                                            <div v-if="item.activo">
+                                                <span class="blue--text">Activo</span>
+                                            </div>
+                                            <div v-else>
+                                                <span class="red--text">Inactivo</span>
+                                            </div>
+                                        </td>
+                                    </template>
+                                    <template v-slot:item.fecha="{ item }">
+                                        <p class="text-center">{{ item.fecha.substr(0, 10) }}</p>
+                                    </template>
+                                    <template v-slot:item.importe="{ item }">
+                                        <p class="text-right">{{ formatPrice(item.importe)}}</p>
+                                    </template>
+
+                                    <template v-slot:item.unsgimporte="{ item }">
+                                        <p class="text-right">{{ formatPrice(item.unsgimporte)}}</p>
+                                    </template>
+                                    <template v-slot:item.fecalta="{ item }">
+                                        <td>{{ item.fecalta.substr(0, 16) }}</td>
+                                    </template>
+                                    <template v-slot:item.fecumod="{ item }">
+                                        <td>{{ item.fecumod.substr(0, 16) }}</td>
+                                    </template>
+                                    <template v-slot:no-data>
+                                        <v-btn color="primary" @click="listarDetail">Resetear</v-btn>
+                                    </template>
+                                </v-data-table>
+                            </v-col>
+                        </v-row>
+                        <v-col cols=12 align="end">
+                            <strong>Total Movimientos: </strong>$ {{totalPagado=(calcularTotal).toFixed(2)}}
+                        </v-col>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="primary" dark class="mb-2" @click.native="createDetail">Nuevo</v-btn>
+                        <v-btn color="success" dark class="mb-2" @click.native="closeDetail">Salir</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+            <v-data-table
+                :headers="headersMaster"
+                :items="headermovimientos"
+                :search="search"
+                class="elevation-1"
+                >
                 <template v-slot:item.actions="{ item }">
-                    <v-icon
-                    small
-                    class="mr-2"
-                    @click="editItem(item)"
-                    >
-                    edit
-                    </v-icon>
-                    <v-icon
-                    small
-                    @click="deleteItem(item)"
-                    >
-                    delete
-                    </v-icon>
-                        <template v-if="item.activo">
-                            <v-icon
-                            small
-                            @click="activarDesactivarMostrar(2,item)"
-                            >
-                            block
-                            </v-icon>
-                        </template>
-                        <template v-else>
-                            <v-icon
-                            small
-                            @click="activarDesactivarMostrar(1,item)"
-                            >
-                            check
-                            </v-icon>
-                    </template>
-                </template>
-                <template v-slot:item.activo="{ item }">
-                    <td>
-                        <div v-if="item.activo">
-                            <span class="blue--text">Activo</span>
-                        </div>
-                        <div v-else>
-                            <span class="red--text">Inactivo</span>
-                        </div>
+                    <td class="justify-center layout px-0">
+                        <v-icon
+                        small
+                        class="mr-2"
+                        @click="editMasterItem(item)"
+                        >
+                        tab
+                        </v-icon>
                     </td>
                 </template>
-                <template v-slot:item.fecalta="{ item }">
-                    <td>{{ item.fecalta.substr(0, 16) }}</td>
+                <template slot="no-data">
+                    <v-btn color="primary" @click="listarMaster">Resetear</v-btn>
                 </template>
-                <template v-slot:item.fecumod="{ item }">
-                    <td>{{ item.fecumod.substr(0, 16) }}</td>
-                </template>
-                <template v-slot:no-data>
-                    <v-btn color="primary" @click="listar">Resetear</v-btn>
-                </template>
-                </v-data-table>
-
-            </v-col>
-        </v-row>
-    </v-container>
+            </v-data-table>
+        </v-col>
+    </v-layout>
 </template>
+
 <script>
-  import axios from 'axios'
-  import jsPDF from 'jspdf'
-  import autoTable from 'jspdf-autotable';
-  export default {
-    data: () => ({
-        selected: [],
-        snackbar:false,
-        snacktext: '',
-        timeout: 4000,
-        movimientos: [],
-        empresas: [],
-        bancos: [],
-        dialog: false,
-        tipos: [
-            { value: 'CC', text: 'Cuenta Corriente'},
-            { value: 'CA', text: 'Caja de Ahorro'}
-        ],
-        monedas: [
-            { value: 'ARS', text: 'Peso Argentino'},
-            { value: 'USD', text: 'US Dolar'},
-            { value: 'EUR', text: 'Euro'}
-        ],
-        headers: [
-            { text: '[Opciones]', value: 'actions', align: 'start', sortable: false },
-            { text: 'Empresa', value: 'empresa', align: 'start', sortable: true },
-            { text: 'Cuentas Asociadas', value: 'asocuenta', align: 'center', sortable: true },
-            { text: 'Año/Mes', value: 'aniomes', align: 'start', sortable: true },
-            { text: '#Asiento', value: 'asientoId', align: 'center', sortable: true },
-            { text: 'Origen', value: 'origen', align: 'start', sortable: true },
-            { text: 'Grupo Conceptos', value: 'grpconcepto', align: 'start', sortable: true },
-            { text: 'Concepto', value: 'concepto', align: 'center', sortable: true },
-            { text: 'Fecha', value: 'fecha', align: 'start', sortable: true },
-            { text: 'Importe', value: 'importe', align: 'start', sortable: true },
-            { text: 'Estado', value: 'activo', align: 'center', sortable: true  },
-            { text: 'Creador Id', value: 'iduseralta', sortable: true },
-            { text: 'Fecha Hora Creación', value: 'fecalta', sortable: true },
-            { text: 'Mod. Id', value: 'iduserumod', sortable: true },
-            { text: 'Fecha Hora Ult.Mod.', value: 'fecumod', sortable: true }                   
-        ],
-        search:'',
-        editedIndex: -1,
-        id: '',
-        empresaId: '',
-        bancoId: '',
-        tipo: '',
-        moneda: '',
-        numcuenta: '',
-        iduseralta:'',
-        fecalta:'',
-        iduserumod:'',
-        fecumod:'',
-        activo:false,                 
-        valida: 0,
-        validaMensaje:[],
-        adModal: 0,
-        adAccion: 0,
-        adNombre: '',
-        adId: ''             
-    }),
-
-    computed: {
-      formTitle () {
-        return this.editedIndex === -1 ? 'Nueva Cuenta de Banco' : 'Actualizar Cuenta de Banco'
-      },
-    },
-
-    watch: {
-      dialog (val) {
-        val || this.close()
-      },
-    },
-
-    created () {
-        this.select();
-        this.listar();
-    },
-
-    methods: {
-        crearPDF(){
-            var columns = [
-                {title: "Empresa", dataKey: "empresa"},
-                {title: "Banco", dataKey: "banco"},
-                {title: "Tipo", dataKey: "tipo"},
-                {title: "Moneda", dataKey: "moneda"},
-                {title: "Cuenta", dataKey: "numcuenta"},
-                {title: "Activo", dataKey: "activo"}
-            ];
-            var rows = [];
-
-            this.movimientos.map(function(x){
-                rows.push({empresa:x.empresa, banco:x.banco,tipo:x.tipo,moneda:x.nomneda,numcuenta:x.numcuenta,activo:x.activo});
-            });
-
-            // Only pt supported (not mm or in)
-            var doc = new jsPDF('l', 'pt');
-            doc.autoTable(columns, rows, {
-                margin: {top: 60},
-                addPageContent: function(data) {
-                    doc.text("Listado de Movimientos", 40, 30);
+    import axios from 'axios'
+    import jsPDF from 'jspdf'
+    import autoTable from 'jspdf-autotable'
+    export default {
+        data: () => {
+            return {
+                snackbar:false,
+                snacktext: 'Hola',
+                timeout: 4000,
+                headermovimientos: [],
+                selected: [],
+                conmovs: [],
+                nocmovs: [],
+                empresas: [],
+                bancos: [],
+                tipos: [
+                    { value: 'CC', text: 'Cuenta Corriente'},
+                    { value: 'CA', text: 'Caja de Ahorro'}
+                ],
+                monedas: [
+                    { value: 'ARS', text: 'Peso Argentino'},
+                    { value: 'USD', text: 'US Dolar'},
+                    { value: 'EUR', text: 'Euro'}
+                ],
+                // Master
+                idproyecto: '',
+                orden: '',
+                proyecto: '',
+                producto: '',
+                fecadjudicacion: '',
+                ars1usd: '',
+                menu1: false,
+                dialog: false,
+                dialogForm: false,
+                headersMaster: [
+                    { text: '[Opciones]', value: 'actions', align: 'center', sortable: false },
+                    { text: 'Empresa', value: 'empresa', align: 'start', sortable: true },
+                    { text: 'Cuentas Asociadas', value: 'asocuenta', align: 'start', sortable: true },
+                    { text: 'Lote#', value: 'loteId', align: 'center', sortable: true },
+                    { text: 'Año/Mes', value: 'aniomes', align: 'center', sortable: true },
+                    { text: 'Cantidad', value: 'cantidad', align: 'center', sortable: true },
+                ],
+                headersDetallePend: [
+                    { text: '[Opciones]', value: 'actions', align: 'center', sortable: false },
+                    { text: 'Origen', value: 'origen', align: 'start', sortable: true },
+                    { text: 'Grupo Conceptos', value: 'grpconcepto', align: 'start', sortable: true },
+                    { text: 'Concepto', value: 'concepto', align: 'start', sortable: true },
+                    { text: 'Fecha', value: 'fecha', align: 'center', sortable: true },
+                    { text: 'Abs(Importe)', value: 'unsgimporte', align: 'center', sortable: true },
+                    { text: 'Importe', value: 'importe', align: 'center', sortable: true },
+                ],
+                headersDetalleConc: [
+                    { text: '[Opciones]', value: 'actions', align: 'center', sortable: false },
+                    { text: 'Id', value: 'asiento', align: 'start', sortable: true },
+                    { text: 'Origen', value: 'origen', align: 'start', sortable: true },
+                    { text: 'Grupo Conceptos', value: 'grpconcepto', align: 'start', sortable: true },
+                    { text: 'Concepto', value: 'concepto', align: 'start', sortable: true },
+                    { text: 'Fecha', value: 'fecha', align: 'center', sortable: true },
+                    { text: 'Importe', value: 'importe', align: 'center', sortable: true },
+                ],
+                search: '',
+                editedIndex: -1,
+                id: '',
+                empresaId: '',
+                bancoId: '',
+                tipo: '',
+                moneda: '',
+                numcuenta: '',
+                iduseralta:'',
+                fecalta:'',
+                iduserumod:'',
+                fecumod:'',
+                activo:false,                 
+                empresa: '',
+                asocuenta: '',
+                loteId: '',
+                aniomes: '',
+                cantidad: '',
+                valida: 0,
+                validaMensaje:[],
+                adModal: 0,
+                adAccion: 0,
+                adNombre: '',
+                adId: ''                         }
+        },
+        computed: {
+            formTitle () {
+                return this.editedIndex === -1 ? 'Nuevo Movimiento' : 'Actualizar Movimiento'
+            },
+            calcularTotal:function(){
+                    var subtotal=0.0;
+                    for(var i=0;i<this.selected.length;i++){
+                        subtotal+=(this.selected[i].activo?this.selected[i].importe:0);
+                    }
+                    return subtotal;
                 }
-            });
-            doc.save('Movimientos.pdf');
-        },
-        listar(){
-            let me=this;
-            let header={"Authorization" : "Bearer " + this.$store.state.token};
-            let configuracion= {headers : header};
-            // console.log(configuracion);
-            axios.get('api/Movimientos/Listar',configuracion).then(function(response){
-                // console.log(response);
-                me.movimientos=response.data;
-            }).catch(function(error){
-                me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
-                me.snackbar = true;
-                console.log(error);
-            });
-        },
-        select(){
-            let me=this;
-            var empresasArray=[];
-            var bancosArray=[];
-            let header={"Authorization" : "Bearer " + this.$store.state.token};
-            let configuracion= {headers : header};
-            axios.get('api/Empresas/Select',configuracion).then(function(response){
-                // console.log(response);
-                empresasArray=response.data;
-                empresasArray.map(function(x){
-                    me.empresas.push({text: x.nombre, value:x.id});
+            },
+        watch: {
+            dialogForm (val) {
+            val || this.closeForm()
+                },
+            },
+            created () {
+                this.listarMaster();
+                this.select();
+            },
+        methods:{
+            formatPrice(value) {
+                let val = (value/1).toFixed(2).replace('.', ',')
+                return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+            },
+            listarMaster(){
+                let me=this;
+                let header={"Authorization" : "Bearer " + this.$store.state.token};
+                let configuracion= {headers : header};
+                // console.log(configuracion);
+                axios.get('api/Movimientos/Listarheader',configuracion).then(function(response){
+                    // console.log(response);
+                    me.headermovimientos=response.data;
+                }).catch(function(error){
+                    me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
+                    me.snackbar = true;
+                    console.log(error);
                 });
-            }).catch(function(error){
-                me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
-                me.snackbar = true;
-                console.log(error);
-            });
-            axios.get('api/Bancos/Select',configuracion).then(function(response){
-                // console.log(response);
-                bancosArray=response.data;
-                bancosArray.map(function(x){
-                    me.bancos.push({text: x.nombre,value:x.id});
+            },
+            listarDetail(){ 
+                let me=this;
+                let header={"Authorization" : "Bearer " + this.$store.state.token};
+                let configuracion= {headers : header};
+                // console.log(configuracion);
+                axios.get('api/Movimientos/Listarnoclote/'+me.loteId,configuracion).then(function(response){
+                    // console.log(response);
+                    me.nocmovs=response.data;
+                }).catch(function(error){
+                    me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
+                    me.snackbar = true;
+                    console.log(error);
                 });
-            }).catch(function(error){
-                me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
-                me.snackbar = true;
-                console.log(error);
-            });
-        },            
-        editItem (item) {
+                axios.get('api/Movimientos/Listarconlote/'+me.loteId,configuracion).then(function(response){
+                    // console.log(response);
+                    me.conmovs=response.data;
+                }).catch(function(error){
+                    me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
+                    me.snackbar = true;
+                    console.log(error);
+                });
+            },
+            select(){
+                let me=this;
+                var empresasArray=[];
+                var bancosArray=[];
+                let header={"Authorization" : "Bearer " + this.$store.state.token};
+                let configuracion= {headers : header};
+                axios.get('api/Empresas/Select',configuracion).then(function(response){
+                    // console.log(response);
+                    empresasArray=response.data;
+                    empresasArray.map(function(x){
+                        me.empresas.push({text: x.nombre, value:x.id});
+                    });
+                }).catch(function(error){
+                    me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
+                    me.snackbar = true;
+                    console.log(error);
+                });
+                axios.get('api/Bancos/Select',configuracion).then(function(response){
+                    // console.log(response);
+                    bancosArray=response.data;
+                    bancosArray.map(function(x){
+                        me.bancos.push({text: x.nombre,value:x.id});
+                    });
+                }).catch(function(error){
+                    me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
+                    me.snackbar = true;
+                    console.log(error);
+                });
+            },
+            editMasterItem (item) {
+                this.empresa = item.empresa;
+                this.asocuenta = item.asocuenta;
+                this.loteId = item.loteId;
+                this.aniomes = item.aniomes;
+                this.selected = [];
+                this.listarDetail();
+                this.dialog = true
+            },
+            editDetailItem (item) {
                 this.id=item.id;
                 this.empresaId=item.empresaId;
                 this.bancoId=item.bancoId;
@@ -329,43 +481,60 @@
                 this.fecumod=item.fecumod;
                 this.activo=item.activo;                
                 this.editedIndex=1;
-                this.dialog = true
-        },
-        deleteItem (item) {
-            var me=this;
-            var resulta = confirm('Esta seguro de querer borrar el registro?');
-            if (resulta) {
-                let header={"Authorization" : "Bearer " + me.$store.state.token};
-                let configuracion= {headers : header};
-                axios.delete('api/Movimientos/Eliminar/'+item.id,configuracion).then(function(response){
-                    me.close();
-                    me.listar();
-                }).catch(function(error){
-                    me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
-                    me.snackbar = true;
-                    console.log(error);
-                });
-            }
-        },
-        close () {
-            this.dialog = false
-            this.limpiar();
-
-        },
-        limpiar(){
-            this.id="";
-            this.empresaId="";
-            this.bancoId="";
-            this.tipo="";
-            this.moneda="";
-            this.numcuenta="";
-            this.iduseralta = "";
-            this.fecalta = "";
-            this.iduserumod = "";
-            this.fecumod = "";
-            this.activo = false;                  
-            this.editedIndex=-1;
-        },
+                this.dialogForm = true
+            },
+            deleteItem (item) {
+                let me=this;
+                var resulta = confirm('Esta seguro de querer borrar el registro?');
+                if (resulta) {
+                    let header={"Authorization" : "Bearer " + me.$store.state.token};
+                    let configuracion= {headers : header};
+                    axios.delete('api/Movimientos/Eliminar/'+item.id,configuracion).then(function(response){
+                        me.closeForm();
+                        me.listarDetail();
+                    }).catch(function(error){
+                        me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
+                        me.snackbar = true;
+                        console.log(error);
+                    });
+                }
+            },
+            createDetail(){
+                this.limpiarDetail();
+                this.editIndex=-1;
+                this.dialogForm = true;
+            },          
+            closeDetail () {
+                this.dialog = false;
+                this.limpiarMaster();
+            },
+            closeForm () {
+                this.dialogForm = false;
+                this.validaMensaje = [];
+                this.limpiarDetail();
+            },
+            limpiarMaster(){
+                this.idproyecto = '';                
+                this.orden = '';
+                this.proyecto = '';
+                this.producto = '';
+                this.fecadjudicacion = '';
+                this.ars1usd = '',               
+                this.totalPagado = 0;
+            },
+            limpiarDetail(){
+                this.id="";
+                this.empresaId="";
+                this.bancoId="";
+                this.tipo="";
+                this.moneda="";
+                this.numcuenta="";
+                this.iduseralta = "";
+                this.fecalta = "";
+                this.iduserumod = "";
+                this.fecumod = "";
+                this.editedIndex=-1;
+            },
         guardar () {
             let me=this;
             if (me.validar()){
@@ -389,9 +558,9 @@
                     'iduserumod': me.$store.state.usuario.idusuario,
                     'fecumod': new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString()                        
                 },configuracion).then(function(response){
-                    me.close();
-                    me.listar();
-                    me.limpiar();                        
+                    me.closeForm();
+                    me.limpiarDetail();                      
+                    me.listarDetail();
                 }).catch(function(error){
                     me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
                     me.snackbar = true;
@@ -407,9 +576,9 @@
                     'numcuenta': me.numcuenta,
                     'iduseralta': me.$store.state.usuario.idusuario                           
                 },configuracion).then(function(response){
-                    me.close();
-                    me.listar();
-                    me.limpiar();                        
+                    me.closeForm();
+                    me.limpiarDetail();                        
+                    me.listarDetail();
                 }).catch(function(error){
                     me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
                     me.snackbar = true;
@@ -468,7 +637,7 @@
                 me.adAccion=0;
                 me.adNombre="";
                 me.adId="";
-                me.listar();                       
+                me.listarDetail();                       
             }).catch(function(error){
                 me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
                 me.snackbar = true;
@@ -484,13 +653,13 @@
                 me.adAccion=0;
                 me.adNombre="";
                 me.adId="";
-                me.listar();                       
+                me.listarDetail();                       
             }).catch(function(error){
                 me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
                 me.snackbar = true;
                 console.log(error);
             });
         }
-    },
-  }
+        }        
+    }
 </script>
