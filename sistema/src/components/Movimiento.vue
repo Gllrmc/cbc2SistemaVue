@@ -29,7 +29,7 @@
                 <v-text-field class="text-xs-center" v-model="search" append-icon="search" label="Búsqueda" single-line hide-details></v-text-field>
                 <v-spacer></v-spacer>
             </v-toolbar>
-            <v-dialog v-model="dialog" max-width="2000px" persistent>
+            <v-dialog v-model="dialog" max-width="1100px" persistent>
                 <v-card>
                     <v-toolbar color="blue darken-3" dark>
                         <v-toolbar-title>Carga de Conciliaciones # {{empresa}} - {{asocuenta}} - {{aniomes}}</v-toolbar-title>
@@ -101,129 +101,27 @@
                                 </v-card-actions>
                             </v-card>
                         </v-dialog>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="primary" dark class="mb-2" @click.native="copartidas=true">Conciliados</v-btn>
+                            <v-btn color="primary" dark class="mb-2" @click.native="adpartidas=true">Seleccionados</v-btn>
+                            <v-btn color="success" dark class="mb-2" @click.native="closeDetail">Salir</v-btn>
+                        </v-card-actions>
                         <v-row fluid>
-                            <v-col cols="12" sm="6" md="6">
-                                <v-card-title>Pendientes</v-card-title>
+                            <v-col cols="12" sm="12" md="12">
+                                <v-card-title>Sin Conciliar</v-card-title>
                                 <v-data-table
                                     v-model="selected"
                                     :headers="headersDetallePend"
                                     :items="nocmovs"
                                     :search="search"
+                                    multi-sort
+                                    must-sort
+                                    sort-desc
+                                    :sort-by="ordenacion"
                                     show-select
                                     class="elevation-1"
                                     >
-                                    <template v-slot:item.actions="{ item }">
-                                        <v-icon
-                                        small
-                                        class="mr-2"
-                                        @click="editItem(item)"
-                                        >
-                                        edit
-                                        </v-icon>
-                                        <v-icon
-                                        small
-                                        @click="deleteItem(item)"
-                                        >
-                                        delete
-                                        </v-icon>
-                                            <template v-if="item.activo">
-                                                <v-icon
-                                                small
-                                                @click="activarDesactivarMostrar(2,item)"
-                                                >
-                                                block
-                                                </v-icon>
-                                            </template>
-                                            <template v-else>
-                                                <v-icon
-                                                small
-                                                @click="activarDesactivarMostrar(1,item)"
-                                                >
-                                                check
-                                                </v-icon>
-                                        </template>
-                                    </template>
-                                    <template v-slot:item.activo="{ item }">
-                                        <td>
-                                            <div v-if="item.activo">
-                                                <span class="blue--text">Activo</span>
-                                            </div>
-                                            <div v-else>
-                                                <span class="red--text">Inactivo</span>
-                                            </div>
-                                        </td>
-                                    </template>
-                                    <template v-slot:item.fecha="{ item }">
-                                        <p class="text-center">{{ item.fecha.substr(0, 10) }}</p>
-                                    </template>
-                                    <template v-slot:item.importe="{ item }">
-                                        <p class="text-right">{{ formatPrice(item.importe)}}</p>
-                                    </template>
-
-                                    <template v-slot:item.unsgimporte="{ item }">
-                                        <p class="text-right">{{ formatPrice(item.unsgimporte)}}</p>
-                                    </template>
-                                    <template v-slot:item.fecalta="{ item }">
-                                        <td>{{ item.fecalta.substr(0, 16) }}</td>
-                                    </template>
-                                    <template v-slot:item.fecumod="{ item }">
-                                        <td>{{ item.fecumod.substr(0, 16) }}</td>
-                                    </template>
-                                    <template v-slot:no-data>
-                                        <v-btn color="primary" @click="listarDetail">Resetear</v-btn>
-                                    </template>
-                                </v-data-table>
-                            </v-col>
-                            <v-col cols="12"  sm="6" md="6">
-                                <v-card-title>Conciliados</v-card-title>
-                                <v-data-table
-                                    :headers="headersDetallePend"
-                                    :items="selected"
-                                    :search="search"
-                                    show-select
-                                    class="elevation-1"
-                                    >
-                                    <template v-slot:item.actions="{ item }">
-                                        <v-icon
-                                        small
-                                        class="mr-2"
-                                        @click="editItem(item)"
-                                        >
-                                        edit
-                                        </v-icon>
-                                        <v-icon
-                                        small
-                                        @click="deleteItem(item)"
-                                        >
-                                        delete
-                                        </v-icon>
-                                            <template v-if="item.activo">
-                                                <v-icon
-                                                small
-                                                @click="activarDesactivarMostrar(2,item)"
-                                                >
-                                                block
-                                                </v-icon>
-                                            </template>
-                                            <template v-else>
-                                                <v-icon
-                                                small
-                                                @click="activarDesactivarMostrar(1,item)"
-                                                >
-                                                check
-                                                </v-icon>
-                                        </template>
-                                    </template>
-                                    <template v-slot:item.activo="{ item }">
-                                        <td>
-                                            <div v-if="item.activo">
-                                                <span class="blue--text">Activo</span>
-                                            </div>
-                                            <div v-else>
-                                                <span class="red--text">Inactivo</span>
-                                            </div>
-                                        </td>
-                                    </template>
                                     <template v-slot:item.fecha="{ item }">
                                         <p class="text-center">{{ item.fecha.substr(0, 10) }}</p>
                                     </template>
@@ -246,15 +144,100 @@
                                 </v-data-table>
                             </v-col>
                         </v-row>
-                        <v-col cols=12 align="end">
-                            <strong>Total Movimientos: </strong>$ {{totalPagado=(calcularTotal).toFixed(2)}}
-                        </v-col>
+                        <v-dialog v-model="adpartidas" max-width="1100px" persistent>
+                            <v-card>
+                                <v-toolbar color="blue darken-3" dark>
+                                    <v-toolbar-title>Partidas seleccionadas</v-toolbar-title>
+                                </v-toolbar>
+                                <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-btn color="primary" dark class="mb-2" @click.native="conciliarPartidas">Grabar</v-btn>
+                                    <v-btn color="success" dark class="mb-2" @click.native="adpartidas=false">Salir</v-btn>
+                                </v-card-actions>
+                                <v-card-text>                            
+                                    <v-col cols="12"  sm="12" md="12">
+                                        <v-data-table
+                                            :headers="headersDetalleSelec"
+                                            :items="selected"
+                                            :search="search"
+                                            class="elevation-1"
+                                            >
+
+                                            <template v-slot:item.fecha="{ item }">
+                                                <p class="text-center">{{ item.fecha.substr(0, 10) }}</p>
+                                            </template>
+                                            <template v-slot:item.importe="{ item }">
+                                                <p class="text-right">{{ formatPrice(item.importe)}}</p>
+                                            </template>
+
+                                            <template v-slot:item.unsgimporte="{ item }">
+                                                <p class="text-right">{{ formatPrice(item.unsgimporte)}}</p>
+                                            </template>
+                                            <template v-slot:item.fecalta="{ item }">
+                                                <td>{{ item.fecalta.substr(0, 16) }}</td>
+                                            </template>
+                                            <template v-slot:item.fecumod="{ item }">
+                                                <td>{{ item.fecumod.substr(0, 16) }}</td>
+                                            </template>
+                                            <template v-slot:no-data>
+                                                <v-btn color="primary" @click="listarDetail">Sin Items</v-btn>
+                                            </template>
+                                        </v-data-table>
+                                    </v-col>
+                                    <v-col cols=12 align="end">
+                                        <strong>Total Movimientos: </strong>$ {{totalPagado=(calcularTotal).toFixed(2)}}
+                                    </v-col>
+                                </v-card-text>
+                            </v-card>
+                        </v-dialog>
+                        <v-dialog v-model="copartidas" max-width="1100px" persistent>
+                            <v-card>
+                                <v-toolbar color="blue darken-3" dark>
+                                    <v-toolbar-title>Partidas Conciliadas</v-toolbar-title>
+                                </v-toolbar>
+                                <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-btn color="primary" dark class="mb-2" @click.native="conciliarPartidas">Reversar</v-btn>
+                                    <v-btn color="success" dark class="mb-2" @click.native="copartidas=false">Salir</v-btn>
+                                </v-card-actions>
+                                <v-row fluid>
+                                    <v-col cols="12" sm="12" md="12">
+                                        <v-data-table
+                                            v-model="selected"
+                                            :headers="headersDetalleConc"
+                                            group-by="asientoId"
+                                            :items="conmovs"
+                                            :search="search"
+                                            multi-sort
+                                            sort-desc
+                                            :sort-by="ordenacion"
+                                            class="elevation-1"
+                                            >
+                                            <template v-slot:item.fecha="{ item }">
+                                                <p class="text-center">{{ item.fecha.substr(0, 10) }}</p>
+                                            </template>
+                                            <template v-slot:item.importe="{ item }">
+                                                <p class="text-right">{{ formatPrice(item.importe)}}</p>
+                                            </template>
+
+                                            <template v-slot:item.unsgimporte="{ item }">
+                                                <p class="text-right">{{ formatPrice(item.unsgimporte)}}</p>
+                                            </template>
+                                            <template v-slot:item.fecalta="{ item }">
+                                                <td>{{ item.fecalta.substr(0, 16) }}</td>
+                                            </template>
+                                            <template v-slot:item.fecumod="{ item }">
+                                                <td>{{ item.fecumod.substr(0, 16) }}</td>
+                                            </template>
+                                            <template v-slot:no-data>
+                                                <v-btn color="primary" @click="listarDetail">Resetear</v-btn>
+                                            </template>
+                                        </v-data-table>
+                                    </v-col>
+                                </v-row>
+                            </v-card>
+                        </v-dialog>
                     </v-card-text>
-                    <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn color="primary" dark class="mb-2" @click.native="createDetail">Nuevo</v-btn>
-                        <v-btn color="success" dark class="mb-2" @click.native="closeDetail">Salir</v-btn>
-                    </v-card-actions>
                 </v-card>
             </v-dialog>
             <v-data-table
@@ -293,11 +276,13 @@
                 snacktext: 'Hola',
                 timeout: 4000,
                 headermovimientos: [],
+                totalPagado: 0,
                 selected: [],
                 conmovs: [],
                 nocmovs: [],
                 empresas: [],
                 bancos: [],
+                ordenacion: ["unsgimporte","fecha"],
                 tipos: [
                     { value: 'CC', text: 'Cuenta Corriente'},
                     { value: 'CA', text: 'Caja de Ahorro'}
@@ -326,7 +311,7 @@
                     { text: 'Cantidad', value: 'cantidad', align: 'center', sortable: true },
                 ],
                 headersDetallePend: [
-                    { text: '[Opciones]', value: 'actions', align: 'center', sortable: false },
+                    // { text: '[Opciones]', value: 'actions', align: 'center', sortable: false },
                     { text: 'Origen', value: 'origen', align: 'start', sortable: true },
                     { text: 'Grupo Conceptos', value: 'grpconcepto', align: 'start', sortable: true },
                     { text: 'Concepto', value: 'concepto', align: 'start', sortable: true },
@@ -335,8 +320,16 @@
                     { text: 'Importe', value: 'importe', align: 'center', sortable: true },
                 ],
                 headersDetalleConc: [
-                    { text: '[Opciones]', value: 'actions', align: 'center', sortable: false },
-                    { text: 'Id', value: 'asiento', align: 'start', sortable: true },
+                    // { text: '[Opciones]', value: 'actions', align: 'center', sortable: false },
+                    { text: 'Asiento', value: 'asientoId', align: 'start', sortable: true },
+                    { text: 'Origen', value: 'origen', align: 'start', sortable: true },
+                    { text: 'Grupo Conceptos', value: 'grpconcepto', align: 'start', sortable: true },
+                    { text: 'Concepto', value: 'concepto', align: 'start', sortable: true },
+                    { text: 'Fecha', value: 'fecha', align: 'center', sortable: true },
+                    { text: 'Importe', value: 'importe', align: 'center', sortable: true },
+                ],
+                headersDetalleSelec: [
+                    // { text: '[Opciones]', value: 'actions', align: 'center', sortable: false },
                     { text: 'Origen', value: 'origen', align: 'start', sortable: true },
                     { text: 'Grupo Conceptos', value: 'grpconcepto', align: 'start', sortable: true },
                     { text: 'Concepto', value: 'concepto', align: 'start', sortable: true },
@@ -366,7 +359,10 @@
                 adModal: 0,
                 adAccion: 0,
                 adNombre: '',
-                adId: ''                         }
+                adId: '',
+                adpartidas: false,
+                copartidas: false
+            }
         },
         computed: {
             formTitle () {
@@ -498,6 +494,51 @@
                         console.log(error);
                     });
                 }
+            },
+            conciliarPartidas(){
+                if (this.totalPagado==0){
+                    this.guardarSelected();
+                }else{
+                    this.generarConciliacion();
+                }
+            },
+            generarConciliacion(){
+                var date = new Date();
+                this.grpconcepto='';
+                this.concepto='';
+                this.fecha=new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString();
+                this.importe=this.totalPagado;
+                this.fecalta='';
+                this.iduserumod='';
+                this.fecumod='';
+                this.activo=true;                
+                this.editedIndex=-1;
+                this.dialogForm=true;
+            },
+            guardarSelected(){
+                let me=this;             
+                var date = new Date();
+                console.log(this.selected[0].id, this.selected[1].id);
+                var idupdates = [];
+                idupdates = this.selected.map( function (eachobj) {return eachobj.id});
+                let header={"Authorization" : "Bearer " + me.$store.state.token};
+                let configuracion= {headers : header};
+                axios.put('api/Movimientos/Actualizarasiento',{
+                    'Id':idupdates,
+                    'iduserumod': me.$store.state.usuario.idusuario,
+                    'fecumod': new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString()                        
+                },configuracion).then(function(response){
+                    me.selected = [];
+                    me.adpartidas = false;
+                    me.copartidas = false;
+                    me.closeForm();
+                    me.limpiarDetail();                      
+                    me.listarDetail();
+                }).catch(function(error){
+                    me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
+                    me.snackbar = true;
+                    console.log(error);
+                });
             },
             createDetail(){
                 this.limpiarDetail();
