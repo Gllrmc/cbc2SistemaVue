@@ -120,27 +120,41 @@
                                     sort-desc
                                     :sort-by="ordenacion"
                                     show-select
+                                    :single-expand="singleExpand"
+                                    :expanded.sync="expandedSC"
+                                    show-expand
                                     class="elevation-1"
                                     >
+                                    <template v-slot:item.origen="{ item }">
+                                        <v-chip v-if="item.origen==='CON'" class="ma-2" color="teal" text-color="white">{{ item.origen }}</v-chip>
+                                        <v-chip v-else-if="item.origen==='BAN'" class="ma-2" color="secondary" text-color="white">{{ item.origen }}</v-chip>
+                                        <v-chip v-else class="ma-2" color="red" text-color="white">{{ item.origen }}</v-chip>
+                                    </template>
                                     <template v-slot:item.fecha="{ item }">
                                         <p class="text-center">{{ item.fecha.substr(0, 10) }}</p>
                                     </template>
                                     <template v-slot:item.importe="{ item }">
-                                        <p class="text-right">{{ formatPrice(item.importe)}}</p>
+                                        <v-chip v-if="item.origen==='CON'" class="ma-2" color="teal" text-color="white">{{ formatPrice(item.importe)}}</v-chip>
+                                        <v-chip v-else-if="item.origen==='BAN'" class="ma-2" color="secondary" text-color="white">{{ formatPrice(item.importe)}}</v-chip>
+                                        <v-chip v-else class="ma-2" color="red" text-color="white">{{ formatPrice(item.importe)}}</v-chip>
                                     </template>
 
-                                    <template v-slot:item.unsgimporte="{ item }">
+                                    <!-- <template v-slot:item.unsgimporte="{ item }">
                                         <p class="text-right">{{ formatPrice(item.unsgimporte)}}</p>
-                                    </template>
+                                    </template> -->
                                     <template v-slot:item.fecalta="{ item }">
                                         <td>{{ item.fecalta.substr(0, 16) }}</td>
                                     </template>
                                     <template v-slot:item.fecumod="{ item }">
                                         <td>{{ item.fecumod.substr(0, 16) }}</td>
                                     </template>
+                                    <template v-slot:expanded-item="{ headers, item }">
+                                        <td :colspan="headers.length">Info {{ item.ref0 }} {{ item.ref2 }} {{ item.ref3 }} {{ item.ref4 }} {{ item.ref5 }} {{ item.ref6 }} {{ item.ref7 }} {{ item.ref8 }} {{ item.ref9 }}</td>
+                                    </template>
                                     <template v-slot:no-data>
                                         <v-btn color="primary" @click="listarDetail">Resetear</v-btn>
                                     </template>
+
                                 </v-data-table>
                             </v-col>
                         </v-row>
@@ -151,7 +165,7 @@
                                 </v-toolbar>
                                 <v-card-actions>
                                     <v-spacer></v-spacer>
-                                    <v-btn color="primary" dark class="mb-2" @click.native="conciliarPartidas">Grabar</v-btn>
+                                    <v-btn :disabled="!(totalPagado==0 && selected.length)" color="primary" dark class="mb-2" @click.native="conciliarPartidas">Grabar</v-btn>
                                     <v-btn color="success" dark class="mb-2" @click.native="adpartidas=false">Salir</v-btn>
                                 </v-card-actions>
                                 <v-card-text>                            
@@ -160,24 +174,35 @@
                                             :headers="headersDetalleSelec"
                                             :items="selected"
                                             :search="search"
+                                            :single-expand="singleExpand"
+                                            :expanded.sync="expandedPS"
+                                            show-expand
                                             class="elevation-1"
                                             >
-
+                                            <template v-slot:item.origen="{ item }">
+                                                <v-chip v-if="item.origen==='CON'" class="ma-2" color="teal" text-color="white">{{ item.origen }}</v-chip>
+                                                <v-chip v-else-if="item.origen==='BAN'" class="ma-2" color="secondary" text-color="white">{{ item.origen }}</v-chip>
+                                                <v-chip v-else class="ma-2" color="red" text-color="white">{{ item.origen }}</v-chip>
+                                            </template>
                                             <template v-slot:item.fecha="{ item }">
                                                 <p class="text-center">{{ item.fecha.substr(0, 10) }}</p>
                                             </template>
                                             <template v-slot:item.importe="{ item }">
-                                                <p class="text-right">{{ formatPrice(item.importe)}}</p>
+                                                <v-chip v-if="item.origen==='CON'" class="ma-2" color="teal" text-color="white">{{ formatPrice(item.importe)}}</v-chip>
+                                                <v-chip v-else-if="item.origen==='BAN'" class="ma-2" color="secondary" text-color="white">{{ formatPrice(item.importe)}}</v-chip>
+                                                <v-chip v-else class="ma-2" color="red" text-color="white">{{ formatPrice(item.importe)}}</v-chip>
                                             </template>
-
-                                            <template v-slot:item.unsgimporte="{ item }">
+                                            <!-- <template v-slot:item.unsgimporte="{ item }">
                                                 <p class="text-right">{{ formatPrice(item.unsgimporte)}}</p>
-                                            </template>
+                                            </template> -->
                                             <template v-slot:item.fecalta="{ item }">
                                                 <td>{{ item.fecalta.substr(0, 16) }}</td>
                                             </template>
                                             <template v-slot:item.fecumod="{ item }">
                                                 <td>{{ item.fecumod.substr(0, 16) }}</td>
+                                            </template>
+                                            <template v-slot:expanded-item="{ headers, item }">
+                                                <td :colspan="headers.length">Info {{ item.ref0 }} {{ item.ref2 }} {{ item.ref3 }} {{ item.ref4 }} {{ item.ref5 }} {{ item.ref6 }} {{ item.ref7 }} {{ item.ref8 }} {{ item.ref9 }}</td>
                                             </template>
                                             <template v-slot:no-data>
                                                 <v-btn color="primary" @click="listarDetail">Sin Items</v-btn>
@@ -196,38 +221,75 @@
                                     <v-toolbar-title>Partidas Conciliadas</v-toolbar-title>
                                 </v-toolbar>
                                 <v-card-actions>
+                                    <v-container>
+                                        <v-row align="start">
+                                            <v-col cols="12" sm="5">
+                                                <v-select  
+                                                    v-model="origen" 
+                                                    :items="origenes"
+                                                    attach
+                                                    chips 
+                                                    append-icon="zoom_in" 
+                                                    label="Origen" 
+                                                    clearable
+                                                    multiple
+                                                    outlined>
+                                                </v-select>
+                                            </v-col>
+                                            <v-col cols="12" sm="5">
+                                                <v-text-field 
+                                                    v-model="search" 
+                                                    append-icon="search" 
+                                                    label="Búsqueda" 
+                                                    clearable>
+                                                </v-text-field>
+                                            </v-col>
+                                        </v-row>
+                                    </v-container>
                                     <v-spacer></v-spacer>
-                                    <v-btn color="primary" dark class="mb-2" @click.native="conciliarPartidas">Reversar</v-btn>
+                                    <v-btn color="primary" dark class="mb-2" @click.native="conciliarPartidas">Seleccionados</v-btn>
                                     <v-btn color="success" dark class="mb-2" @click.native="copartidas=false">Salir</v-btn>
                                 </v-card-actions>
                                 <v-row fluid>
                                     <v-col cols="12" sm="12" md="12">
                                         <v-data-table
-                                            v-model="selected"
+                                            v-model="reversed"
                                             :headers="headersDetalleConc"
-                                            group-by="asientoId"
                                             :items="conmovs"
                                             :search="search"
+                                            show-select
                                             multi-sort
                                             sort-desc
+                                            :single-expand="singleExpand"
+                                            :expanded.sync="expandedPC"
+                                            show-expand                                            
                                             :sort-by="ordenacion"
                                             class="elevation-1"
                                             >
+                                            <template v-slot:item.origen="{ item }">
+                                                <v-chip v-if="item.origen==='CON'" class="ma-2" color="teal" text-color="white">{{ item.origen }}</v-chip>
+                                                <v-chip v-else-if="item.origen==='BAN'" class="ma-2" color="secondary" text-color="white">{{ item.origen }}</v-chip>
+                                                <v-chip v-else class="ma-2" color="red" text-color="white">{{ item.origen }}</v-chip>
+                                            </template>
                                             <template v-slot:item.fecha="{ item }">
-                                                <p class="text-center">{{ item.fecha.substr(0, 10) }}</p>
+                                                <p class="text-center" >{{ item.fecha.substr(0, 10) }}</p>
                                             </template>
                                             <template v-slot:item.importe="{ item }">
-                                                <p class="text-right">{{ formatPrice(item.importe)}}</p>
+                                                <v-chip v-if="item.origen==='CON'" class="ma-2" color="teal" text-color="white">{{ formatPrice(item.importe)}}</v-chip>
+                                                <v-chip v-else-if="item.origen==='BAN'" class="ma-2" color="secondary" text-color="white">{{ formatPrice(item.importe)}}</v-chip>
+                                                <v-chip v-else class="ma-2" color="red" text-color="white">{{ formatPrice(item.importe)}}</v-chip>
                                             </template>
-
-                                            <template v-slot:item.unsgimporte="{ item }">
+                                            <!-- <template v-slot:item.unsgimporte="{ item }">
                                                 <p class="text-right">{{ formatPrice(item.unsgimporte)}}</p>
-                                            </template>
+                                            </template> -->
                                             <template v-slot:item.fecalta="{ item }">
                                                 <td>{{ item.fecalta.substr(0, 16) }}</td>
                                             </template>
                                             <template v-slot:item.fecumod="{ item }">
                                                 <td>{{ item.fecumod.substr(0, 16) }}</td>
+                                            </template>
+                                            <template v-slot:expanded-item="{ headers, item }">
+                                                <td :colspan="headers.length">Info {{ item.ref0 }} {{ item.ref2 }} {{ item.ref3 }} {{ item.ref4 }} {{ item.ref5 }} {{ item.ref6 }} {{ item.ref7 }} {{ item.ref8 }} {{ item.ref9 }}</td>
                                             </template>
                                             <template v-slot:no-data>
                                                 <v-btn color="primary" @click="listarDetail">Resetear</v-btn>
@@ -273,16 +335,28 @@
         data: () => {
             return {
                 snackbar:false,
-                snacktext: 'Hola',
+                snacktext: '',
                 timeout: 4000,
+                singleExpand: false,
+                expandedSC: [],
+                expandedPS: [],
+                expandedPC: [],
                 headermovimientos: [],
                 totalPagado: 0,
                 selected: [],
+                reversed: [],
                 conmovs: [],
                 nocmovs: [],
                 empresas: [],
                 bancos: [],
                 ordenacion: ["unsgimporte","fecha"],
+                origen: '',
+                origenes:[
+                    { value: 'CON', text: 'CON'},
+                    { value: 'BAN', text: 'BAN'},
+                    { value: 'APE', text: 'APE'},
+                    { value: 'AJU', text: 'AJU'},
+                ],
                 tipos: [
                     { value: 'CC', text: 'Cuenta Corriente'},
                     { value: 'CA', text: 'Caja de Ahorro'}
@@ -316,8 +390,9 @@
                     { text: 'Grupo Conceptos', value: 'grpconcepto', align: 'start', sortable: true },
                     { text: 'Concepto', value: 'concepto', align: 'start', sortable: true },
                     { text: 'Fecha', value: 'fecha', align: 'center', sortable: true },
-                    { text: 'Abs(Importe)', value: 'unsgimporte', align: 'center', sortable: true },
+                    // { text: 'Abs(Importe)', value: 'unsgimporte', align: 'center', sortable: true },
                     { text: 'Importe', value: 'importe', align: 'center', sortable: true },
+                    { text: '', value: 'data-table-expand' },
                 ],
                 headersDetalleConc: [
                     // { text: '[Opciones]', value: 'actions', align: 'center', sortable: false },
@@ -327,6 +402,7 @@
                     { text: 'Concepto', value: 'concepto', align: 'start', sortable: true },
                     { text: 'Fecha', value: 'fecha', align: 'center', sortable: true },
                     { text: 'Importe', value: 'importe', align: 'center', sortable: true },
+                    { text: '', value: 'data-table-expand' },
                 ],
                 headersDetalleSelec: [
                     // { text: '[Opciones]', value: 'actions', align: 'center', sortable: false },
@@ -335,6 +411,7 @@
                     { text: 'Concepto', value: 'concepto', align: 'start', sortable: true },
                     { text: 'Fecha', value: 'fecha', align: 'center', sortable: true },
                     { text: 'Importe', value: 'importe', align: 'center', sortable: true },
+                    { text: '', value: 'data-table-expand' },
                 ],
                 search: '',
                 editedIndex: -1,
@@ -461,6 +538,7 @@
                 this.loteId = item.loteId;
                 this.aniomes = item.aniomes;
                 this.selected = [];
+                this.reversed = [];
                 this.listarDetail();
                 this.dialog = true
             },
@@ -499,7 +577,8 @@
                 if (this.totalPagado==0){
                     this.guardarSelected();
                 }else{
-                    this.generarConciliacion();
+                    this.snacktext = 'Las partidas no balancean';
+                    this.snackbar = true;
                 }
             },
             generarConciliacion(){
@@ -518,7 +597,6 @@
             guardarSelected(){
                 let me=this;             
                 var date = new Date();
-                console.log(this.selected[0].id, this.selected[1].id);
                 var idupdates = [];
                 idupdates = this.selected.map( function (eachobj) {return eachobj.id});
                 let header={"Authorization" : "Bearer " + me.$store.state.token};
