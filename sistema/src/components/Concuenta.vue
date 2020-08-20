@@ -104,7 +104,7 @@
                     </v-dialog>
                 </v-toolbar>
             </template>
-            <template v-slot:item.actions="{ item }">
+            <template v-slot:[`item.actions`]="{ item }">
                 <v-icon
                 small
                 class="mr-2"
@@ -135,7 +135,7 @@
                         </v-icon>
                 </template>
             </template>
-            <template v-slot:item.activo="{ item }">
+            <template v-slot:[`item.activo`]="{ item }">
                 <td>
                     <div v-if="item.activo">
                         <span class="blue--text">Activo</span>
@@ -145,10 +145,10 @@
                     </div>
                 </td>
             </template>
-            <template v-slot:item.fecalta="{ item }">
+            <template v-slot:[`item.fecalta`]="{ item }">
                 <td>{{ item.fecalta.substr(0, 16) }}</td>
             </template>
-            <template v-slot:item.fecumod="{ item }">
+            <template v-slot:[`item.fecumod`]="{ item }">
                 <td>{{ item.fecumod.substr(0, 16) }}</td>
             </template>
             <template v-slot:no-data>

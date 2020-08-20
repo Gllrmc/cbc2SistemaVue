@@ -81,6 +81,9 @@
                                         <v-text-field type="password" v-model="password" label="Password">
                                         </v-text-field>
                                     </v-col>
+                                    <v-col cols="12" sm="5" md="5">
+                                        <v-switch v-model="pxch" class="mx-2" label="Solicitar Password"></v-switch>
+                                    </v-col>
                                     <v-col cols="12" sm="12" md="12" v-show="valida">
                                         <div class="red--text" v-for="v in validaMensaje" :key="v" v-text="v">
                                         </div>
@@ -121,7 +124,7 @@
                     </v-dialog>
                 </v-toolbar>
             </template>
-            <template v-slot:item.actions="{ item }">
+            <template v-slot:[`item.actions`]="{ item }">
                 <v-icon
                 small
                 class="mr-2"
@@ -152,7 +155,7 @@
                         </v-icon>
                 </template>
             </template>
-            <template v-slot:item.activo="{ item }">
+            <template v-slot:[`item.activo`]="{ item }">
                 <td>
                     <div v-if="item.activo">
                         <span class="blue--text">Activo</span>
@@ -162,10 +165,10 @@
                     </div>
                 </td>
             </template>
-            <template v-slot:item.fecalta="{ item }">
+            <template v-slot:[`item.fecalta`]="{ item }">
                 <td>{{ item.fecalta.substr(0, 16) }}</td>
             </template>
-            <template v-slot:item.fecumod="{ item }">
+            <template v-slot:[`item.fecumod`]="{ item }">
                 <td>{{ item.fecumod.substr(0, 16) }}</td>
             </template>
             <template v-slot:no-data>
@@ -211,6 +214,7 @@
         telefono: '',
         email: '',
         password:'',
+        pxch:false,
         iduseralta:'',
         fecalta:'',
         iduserumod:'',
@@ -319,6 +323,7 @@
             this.email=item.email;
             this.password=item.password_hash;
             this.passwordAnt=item.password_hash;
+            this.pxch=item.pxch;
             this.iduseralta=item.iduseralta;
             this.fecalta=item.fecalta;
             this.iduserumod=item.iduserumod;
@@ -357,6 +362,7 @@
                 this.email="";
                 this.password="";
                 this.passwordAnt="";
+                this.pxch=false;
                 this.iduseralta = "";
                 this.fecalta = "";
                 this.iduserumod = "";
@@ -388,6 +394,7 @@
                     'email':me.email,
                     'password':me.password,
                     'act_password':me.actPassword,
+                    'pxch':me.pxch,
                     'iduseralta': me.iduseralta,
                     'fecalta': me.fecalta,
                     'iduserumod': me.$store.state.usuario.idusuario,
@@ -411,6 +418,7 @@
                     'telefono': me.telefono,
                     'email':me.email,
                     'password':me.password,
+                    'pxch':me.pxch,
                     'iduseralta': me.$store.state.usuario.idusuario                      
                 },configuracion)
                 .then(function(response){

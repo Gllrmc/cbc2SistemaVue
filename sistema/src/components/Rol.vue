@@ -61,7 +61,7 @@
                             </v-card>
                         </v-dialog>                </v-toolbar>
                 </template>
-                <template v-slot:item.actions="{ item }">
+                <template v-slot:[`item.actions`]="{ item }">
                     <template v-if="item.activo">
                         <v-icon
                         small
@@ -79,7 +79,7 @@
                         </v-icon>
                     </template>
                 </template>
-                <template v-slot:item.activo="{ item }">
+                <template v-slot:[`item.activo`]="{ item }">
                     <td>
                         <div v-if="item.activo">
                             <span class="blue--text">Activo</span>

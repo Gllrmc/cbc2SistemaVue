@@ -295,7 +295,8 @@
       </v-list>
     </v-navigation-drawer>
     <v-app-bar
-    color="blue darken-3"
+    color="blue darken-4
+    "
     dark
     app
     :clipped-left="$vuetify.breakpoint.mdAndUp"
@@ -335,7 +336,7 @@
       color="primary"
       class="text-center"
       col="12">
-        <v-card flat tile color="primary">
+        <v-card flat tile color="blue darken-4">
           <v-card-text class="white--text">
             <strong>&copy;2015 Akiel Consultoría en Gestión de Negocios. Todos los Derechos Reservados</strong>
           </v-card-text>

@@ -50,7 +50,7 @@
                         <v-card-text>
                             <v-container grid-list-md>
                                 <v-row dense>
-                                    <v-col cols="12" sm="4" md="4">
+                                    <v-col cols="12" sm="7" md="7">
                                         <v-autocomplete 
                                             v-model="empresaId"
                                             clearable
@@ -59,11 +59,14 @@
                                             label="Empresa">
                                         </v-autocomplete>
                                     </v-col>
+                                    <v-col cols="12" sm="5" md="5">
+                                        <v-switch v-model="esajuape" class="mx-2" label="Ajuste o Apertura"></v-switch>
+                                    </v-col>
                                     <v-col cols="12" sm="2" md="2">
                                         <v-text-field v-model="orden" label="Código">
                                         </v-text-field>
                                     </v-col>
-                                    <v-col cols="12" sm="6" md="6">
+                                    <v-col cols="12" sm="10" md="10">
                                         <v-text-field v-model="nombre" label="Grupo">
                                         </v-text-field>
                                     </v-col>
@@ -107,7 +110,7 @@
                     </v-dialog>
                 </v-toolbar>
             </template>
-            <template v-slot:item.actions="{ item }">
+            <template v-slot:[`item.actions`]="{ item }">
                 <v-icon
                 small
                 class="mr-2"
@@ -138,7 +141,7 @@
                         </v-icon>
                 </template>
             </template>
-            <template v-slot:item.activo="{ item }">
+            <template v-slot:[`item.activo`]="{ item }">
                 <td>
                     <div v-if="item.activo">
                         <span class="blue--text">Activo</span>
@@ -148,10 +151,10 @@
                     </div>
                 </td>
             </template>
-            <template v-slot:item.fecalta="{ item }">
+            <template v-slot:[`item.fecalta`]="{ item }">
                 <td>{{ item.fecalta.substr(0, 16) }}</td>
             </template>
-            <template v-slot:item.fecumod="{ item }">
+            <template v-slot:[`item.fecumod`]="{ item }">
                 <td>{{ item.fecumod.substr(0, 16) }}</td>
             </template>
             <template v-slot:no-data>
@@ -171,6 +174,7 @@
         snackbar:false,
         snacktext: '',
         timeout: 4000,
+        empresas:[],
         grpconceptos:[],
         paises: [],
         provincias: [],               
@@ -182,6 +186,7 @@
             { text: 'Empresa', value: 'empresa', align: 'start', sortable: true },
             { text: 'Código', value: 'orden', align: 'start', sortable: true },
             { text: 'Nombre de Grupo', value: 'nombre', align: 'start', sortable: true },
+            { text: 'Aju/Ape', value: 'esajuape', align: 'center', sortable: true },
             { text: 'Estado', value: 'activo', align: 'center', sortable: true  },
             { text: 'Creador Id', value: 'iduseralta', align: 'center', sortable: true },
             { text: 'Fecha Hora Creación', value: 'fecalta', align: 'start', sortable: true },
@@ -189,10 +194,12 @@
             { text: 'Fecha Hora Ult.Mod.', value: 'fecumod', align: 'start', sortable: true }                   
         ],
         search: '',
+        searchem:'',
         editedIndex: -1,
         id: '',
         orden: '',
         nombre: '',
+        esajuape: false,
         empresaId: '',
         iduseralta:'',
         fecalta:'',
@@ -284,6 +291,7 @@
             this.empresaId=item.empresaId;
             this.orden=item.orden;
             this.nombre=item.nombre;
+            this.esajuape=item.esajuape;
             this.iduseralta=item.iduseralta;
             this.fecalta=item.fecalta;
             this.iduserumod=item.iduserumod;
@@ -311,13 +319,13 @@
         close () {
             this.dialog = false
             this.limpiar();
-
         },
         limpiar(){
             this.id="";
             this.empresaId="";
             this.orden="";
             this.nombre="";
+            this.esajuape=false;
             this.iduseralta = "";
             this.fecalta = "";
             this.iduserumod = "";
@@ -341,6 +349,7 @@
                         'empresaId': me.empresaId,
                         'orden': me.orden,
                         'nombre': me.nombre,
+                        'esajuape': me.esajuape,
                         'iduseralta': me.iduseralta,
                         'fecalta': me.fecalta,
                         'iduserumod': me.$store.state.usuario.idusuario,
@@ -356,12 +365,12 @@
                     });
                 } else {
                     //Código para guardar
-                    debugger;
                     let me=this;
                     axios.post('api/Grpconceptos/Crear',{
                         'empresaId': me.empresaId,
                         'orden': me.orden,
                         'nombre': me.nombre,
+                        'esajuape': me.esajuape,
                         'iduseralta': me.$store.state.usuario.idusuario                           
                     },configuracion).then(function(response){
                         me.close();
