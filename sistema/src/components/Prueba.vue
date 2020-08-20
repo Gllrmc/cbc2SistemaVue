@@ -71,7 +71,7 @@
           {text: 'Fat (g)', value: 'fat'},
           {text: 'Carbs (g)', value: 'carbs'},
           {text: 'Protein (g)', value: 'protein'},
-          {text: 'Iron (%)', value: 'iron'},
+          {text: 'Iron (%)', value: 'hierro'},
         ]
       },
     },
