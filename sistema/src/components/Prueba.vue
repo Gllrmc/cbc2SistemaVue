@@ -71,7 +71,7 @@
           {text: 'Fat (g)', value: 'fat'},
           {text: 'Carbs (g)', value: 'carbs'},
           {text: 'Protein (g)', value: 'protein'},
-          {text: 'Iron (%)', value: 'hierro'},
+          {text: 'Iron (%)', value: 'iron'},
         ]
       },
     },
@@ -96,7 +96,7 @@
        * @returns {boolean}
        */
       caloriesFilter(value) {
-        // If this filter has no value we just skip the entire filter. 
+        // If this filter has no value we just skip the entire filter.
         if (!this.caloriesFilterValue) {
           return true;
         }
