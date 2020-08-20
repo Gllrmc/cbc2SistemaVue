@@ -96,7 +96,7 @@
        * @returns {boolean}
        */
       caloriesFilter(value) {
-        // If this filter has no value we just skip the entire filter.
+        // If this filter has no value we just skip the entire filter. 
         if (!this.caloriesFilterValue) {
           return true;
         }
