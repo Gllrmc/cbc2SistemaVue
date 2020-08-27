@@ -28,51 +28,51 @@
               </div>
             </v-card-text>
           </v-card>
-            <v-dialog v-model="dialog" max-width="600px" persistent>
-              <v-toolbar
-                color="indigo"
-                dark
-              >
-                <v-app-bar-nav-icon></v-app-bar-nav-icon>
-                <v-toolbar-title>Cambio de Password Requerido</v-toolbar-title>
-                <v-spacer></v-spacer>
-                <v-btn icon>
-                  <v-icon>verified_user</v-icon>
-                </v-btn>
-              </v-toolbar>
-                <v-card>
-                <v-card-title>
-                    <span class="headline"></span>
-                </v-card-title>
-                <v-card-text>
-                    <v-container grid-list-md>
-                        <v-row dense>
-                            <v-col cols="12" sm="12" md="12">
-                                <v-text-field type="password" v-model="actualpassword" label="Password Actual">
-                                </v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="12" md="12">
-                                <v-text-field type="password" v-model="password" label="Nueva Password" required>
-                                </v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="12" md="12">
-                                <v-text-field type="password" v-model="retypepassword" label="Confirmar Password" required>
-                                </v-text-field>
-                            </v-col>
-                        </v-row>
-                        <v-col cols="12" sm="12" md="12" v-show="valida">
-                            <div class="red--text" v-for="v in validaMensaje" :key="v" v-text="v">
-                            </div>
-                        </v-col> 
-                    </v-container>
-                </v-card-text>
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" text @click="salir">Cancelar</v-btn>
-                    <v-btn color="blue darken-1" text @click="guardar">Guardar</v-btn>
-                </v-card-actions>
-                </v-card>
-            </v-dialog>
+          <v-dialog v-model="dialog" max-width="600px" persistent>
+            <v-toolbar
+              color="indigo"
+              dark
+            >
+              <v-app-bar-nav-icon></v-app-bar-nav-icon>
+              <v-toolbar-title>Cambio de Password Requerido</v-toolbar-title>
+              <v-spacer></v-spacer>
+              <v-btn icon>
+                <v-icon>verified_user</v-icon>
+              </v-btn>
+            </v-toolbar>
+              <v-card>
+              <v-card-title>
+                  <span class="headline"></span>
+              </v-card-title>
+              <v-card-text>
+                  <v-container grid-list-md>
+                      <v-row dense>
+                          <v-col cols="12" sm="12" md="12">
+                              <v-text-field type="password" v-model="actualpassword" label="Password Actual">
+                              </v-text-field>
+                          </v-col>
+                          <v-col cols="12" sm="12" md="12">
+                              <v-text-field type="password" v-model="password" label="Nueva Password" required>
+                              </v-text-field>
+                          </v-col>
+                          <v-col cols="12" sm="12" md="12">
+                              <v-text-field type="password" v-model="retypepassword" label="Confirmar Password" required>
+                              </v-text-field>
+                          </v-col>
+                      </v-row>
+                      <v-col cols="12" sm="12" md="12" v-show="valida">
+                          <div class="red--text" v-for="v in validaMensaje" :key="v" v-text="v">
+                          </div>
+                      </v-col> 
+                  </v-container>
+              </v-card-text>
+              <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn color="blue darken-1" text @click="salir">Cancelar</v-btn>
+                  <v-btn color="blue darken-1" text @click="guardar">Guardar</v-btn>
+              </v-card-actions>
+              </v-card>
+          </v-dialog>
       </v-layout>
 </template>
 
