@@ -29,6 +29,71 @@
                 <v-text-field class="text-xs-center" v-model="search" append-icon="search" label="Búsqueda" single-line hide-details></v-text-field>
                 <v-spacer></v-spacer>
             </v-toolbar>
+            <v-dialog v-model="dialogcuadro" max-width="800px">
+                <v-card>
+                    <v-toolbar color="blue darken-3" dark>
+                        <v-toolbar-title>Cuadro de Saldos # {{empresa}} - {{asocuenta}} - {{aniomes}}</v-toolbar-title>
+                    </v-toolbar>
+                    <v-card-text>
+                        <v-container grid-list-md>
+                            <v-row justify="center">
+                                <v-col cols="12" sm="3" md="3">
+                                    <h2 class="ma-2 pa-1 text-center">Origen</h2>
+                                </v-col>
+                                <v-col cols="12" sm="3" md="3">
+                                    <h2 class="ma-2 pa-1 text-center">Saldo Inicial</h2>
+                                </v-col>
+                                <v-col cols="12" sm="3" md="3">
+                                    <h2 class="ma-2 pa-1 text-center">Movimientos</h2>
+                                </v-col>
+                                <v-col cols="12" sm="3" md="3">
+                                    <h2 class="ma-2 pa-1 text-center">Saldo Final</h2>
+                                </v-col>
+                                <v-col cols="12" sm="3" md="3">
+                                    <h3 class="text-center">Contabilidad</h3>
+                                </v-col>
+                                <v-col cols="12" sm="3" md="3">
+                                    <h3 class="text-right">{{formatPrice(cuadro.contaSI)}}</h3>
+                                </v-col>
+                                <v-col cols="12" sm="3" md="3">
+                                    <h3 class="text-right">{{formatPrice(cuadro.contaMO)}}</h3>
+                                </v-col>
+                                <v-col cols="12" sm="3" md="3">
+                                    <h3 class="text-right">{{formatPrice(cuadro.contaSF)}}</h3>
+                                </v-col>
+                                <v-col cols="12" sm="3" md="3">
+                                    <h3 class="text-center">Partidas</h3>
+                                </v-col>
+                                <v-col cols="12" sm="3" md="3">
+                                    <h3 class="text-right">{{formatPrice(cuadro.partiSI)}}</h3>
+                                </v-col>
+                                <v-col cols="12" sm="3" md="3">
+                                    <h3 class="text-right">{{formatPrice(cuadro.partiMO)}}</h3>
+                                </v-col>
+                                <v-col cols="12" sm="3" md="3">
+                                    <h3 class="text-right">{{formatPrice(cuadro.partiSF)}}</h3>
+                                </v-col>
+                                <v-col cols="12" sm="3" md="3">
+                                    <h3 class="text-center">Bancos</h3>
+                                </v-col>
+                                <v-col cols="12" sm="3" md="3">
+                                    <h3 class="text-right">{{formatPrice(cuadro.bancoSI)}}</h3>
+                                </v-col>
+                                <v-col cols="12" sm="3" md="3">
+                                    <h3 class="text-right">{{formatPrice(cuadro.bancoMO)}}</h3>
+                                </v-col>
+                                <v-col cols="12" sm="3" md="3">
+                                    <h3 class="text-right">{{formatPrice(cuadro.bancoSF)}}</h3>
+                                </v-col>
+                            </v-row>
+                        </v-container>
+                    </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue darken-1" text @click="dialogcuadro=false">Salir</v-btn>
+                </v-card-actions>
+                </v-card>
+            </v-dialog>
             <v-dialog v-model="dialog" max-width="1100px" persistent>
                 <v-card>
                     <v-toolbar color="blue darken-3" dark>
@@ -43,6 +108,7 @@
                             <v-spacer></v-spacer>
                             <v-btn :disabled="!selected.length" color="primary" dark class="mb-2" @click.native="verSeleccionados">Seleccionados</v-btn>
                             <v-btn color="primary" dark class="mb-2" @click.native="verConciliados">Conciliados</v-btn>
+                            <v-btn color="primary" dark class="mb-2" @click.native="verSaldos()">Saldos</v-btn>
                             <v-btn color="success" dark class="mb-2" @click.native="closeDetail">Salir</v-btn>
                         </v-card-actions>
                         <v-row align="start">
@@ -462,6 +528,13 @@
                         >
                         tab
                         </v-icon>
+                        <v-icon
+                        small
+                        class="mr-2"
+                        @click="verSaldosHeader(item)"
+                        >
+                        double_arrow
+                        </v-icon>
                     </td>
                 </template>
                 <template slot="no-data">
@@ -496,6 +569,7 @@
                 reversed: [],
                 ajustes: [],
                 aperturas: [],
+                cuadro: [],
                 conmovs: [],
                 nocmovs: [],
                 empresas: [],
@@ -527,6 +601,7 @@
                 ars1usd: '',
                 menu1: false,
                 dialog: false,
+                dialogcuadro: false,
                 headersMaster: [
                     { text: '[Opciones]', value: 'actions', align: 'center', sortable: false },
                     { text: 'Empresa', value: 'empresa', align: 'start', sortable: true },
@@ -737,6 +812,40 @@
                 this.reversed = [];
                 this.listarDetail();
                 this.dialog = true
+            },
+            verSaldosHeader(item){
+                let me=this;
+                this.empresa = item.empresa;
+                this.asocuenta = item.asocuenta;
+                this.loteId = item.loteId;
+                this.aniomes = item.aniomes;
+                let header={"Authorization" : "Bearer " + this.$store.state.token};
+                let configuracion= {headers : header};
+                // console.log(configuracion);
+                axios.get('api/Movimientos/Consultacuadrada/'+item.loteId,configuracion).then(function(response){
+                    // console.log(response);
+                    me.cuadro=response.data;
+                }).catch(function(error){
+                    me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
+                    me.snackbar = true;
+                    console.log(error);
+                });
+                me.dialogcuadro=true;
+            },
+            verSaldos(){
+                let me=this;
+                let header={"Authorization" : "Bearer " + this.$store.state.token};
+                let configuracion= {headers : header};
+                // console.log(configuracion);
+                axios.get('api/Movimientos/Consultacuadrada/'+me.loteId,configuracion).then(function(response){
+                    // console.log(response);
+                    me.cuadro=response.data;
+                }).catch(function(error){
+                    me.snacktext = 'Se detectó un error. Código: '+ error.response.status;
+                    me.snackbar = true;
+                    console.log(error);
+                });
+                me.dialogcuadro=true;
             },
             deleteItem (item) {
                 let me=this;
