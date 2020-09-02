@@ -27,23 +27,13 @@
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
-            <v-list-item :to="{ name: 'categorias'}">
+            <v-list-item :to="{ name: 'saldos'}">
               <v-list-item-action>
                 <v-icon>table_chart</v-icon>
               </v-list-item-action>
               <v-list-item-content>
                 <v-list-item-title>
-                  Categorias
-                </v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item :to="{ name: 'articulos'}">
-              <v-list-item-action>
-                <v-icon>table_chart</v-icon>
-              </v-list-item-action>
-              <v-list-item-content>
-                <v-list-item-title>
-                  Articulos
+                  Saldos Mensuales
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
@@ -53,7 +43,7 @@
               </v-list-item-action>
               <v-list-item-content>
                 <v-list-item-title>
-                  Extracto Bancario
+                  Movimientos Banco
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
@@ -63,27 +53,7 @@
               </v-list-item-action>
               <v-list-item-content>
                 <v-list-item-title>
-                  Cuenta Contable
-                </v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item :to="{ name: 'parabierta'}">
-              <v-list-item-action>
-                <v-icon>table_chart</v-icon>
-              </v-list-item-action>
-              <v-list-item-content>
-                <v-list-item-title>
-                  Partidas Abiertas
-                </v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item :to="{ name: 'apebanco'}">
-              <v-list-item-action>
-                <v-icon>table_chart</v-icon>
-              </v-list-item-action>
-              <v-list-item-content>
-                <v-list-item-title>
-                  Apertura Banco
+                  Movimientos Contabilidad
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
@@ -248,17 +218,7 @@
                   Parametros
                 </v-list-item-title>
               </v-list-item-content>
-            </v-list-item>            
-            <v-list-item :to="{ name: 'pruebas'}">
-              <v-list-item-action>
-                <v-icon>table_chart</v-icon>
-              </v-list-item-action>
-              <v-list-item-content>
-                <v-list-item-title>
-                  Prueba
-                </v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>            
+            </v-list-item>
           </v-list-group>  
         </template>
         <template v-if="esAdministrador || esJefeAdministracion">

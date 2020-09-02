@@ -52,9 +52,12 @@
                                 <v-container grid-list-md>
                                     <v-row dense>
                                         <v-col cols="12" sm="9" md="9">
-                                            <v-select v-model="empresaId" 
-                                            :items = "empresas" label = "Empresa">
-                                            </v-select>
+                                            <v-autocomplete 
+                                                v-model="empresaId"
+                                                clearable
+                                                :items = "empresas"
+                                                label="Empresa">
+                                            </v-autocomplete>
                                         </v-col>
                                         <v-col cols="12" sm="3" md="3">
                                             <v-text-field v-model="orden" label="Orden"></v-text-field>
@@ -105,7 +108,7 @@
                         </v-dialog>
                     </v-toolbar>
                 </template>
-                <template v-slot:item.actions="{ item }">
+                <template v-slot:[`item.actions`]="{ item }">
                     <v-icon
                     small
                     class="mr-2"
@@ -136,7 +139,7 @@
                             </v-icon>
                     </template>
                 </template>
-                <template v-slot:item.activo="{ item }">
+                <template v-slot:[`item.activo`]="{ item }">
                     <td>
                         <div v-if="item.activo">
                             <span class="blue--text">Activo</span>
@@ -146,10 +149,10 @@
                         </div>
                     </td>
                 </template>
-                <template v-slot:item.fecalta="{ item }">
+                <template v-slot:[`item.fecalta`]="{ item }">
                     <td>{{ item.fecalta.substr(0, 16) }}</td>
                 </template>
-                <template v-slot:item.fecumod="{ item }">
+                <template v-slot:[`item.fecumod`]="{ item }">
                     <td>{{ item.fecumod.substr(0, 16) }}</td>
                 </template>
                 <template v-slot:no-data>
